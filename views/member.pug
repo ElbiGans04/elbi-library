@@ -1,18 +1,27 @@
 head
   meta(charset='utf-8')
-  meta(http-equiv='X-UA-Compatible' content='IE=edge')
-  meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
-  meta(name='description' content='')
-  meta(name='author' content='')
-  title Elbi Library
+  meta(http-equiv='X-UA-Compatible', content='IE=edge')
+  meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  meta(name='description', content='')
+  meta(name='author', content='')
+  title Elbi Library | Member
   // Custom fonts for this template
-  link(href='/assets/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
-  link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
+  link(href='/assets/vendor/fontawesome-free/css/all.min.css', rel='stylesheet', type='text/css')
+  link(href='/assets/font/font.css', rel='stylesheet')
   // Custom styles for this template
-  link(href='/assets/css/sb-admin-2.min.css' rel='stylesheet')
+  link(href='/assets/css/sb-admin-2.min.css', rel='stylesheet')
   // Custom styles for this page
-  link(href='/assets/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
+  link(href='/assets/vendor/datatables/dataTables.bootstrap4.min.css', rel='stylesheet')
   style.
+    table#dataTable > tbody > tr > td {
+      -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+      -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Old versions of Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+      user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+    }
     table#dataTable > tbody > tr > td:hover {
     cursor: pointer;
     }
@@ -23,12 +32,15 @@ head
     background-color: #ddd;
     opacity: 0.7;
     }
+    table#dataTable > tbody > tr > td.actionTable > button {
+    margin-right: .1rem
+    }
 // Page Wrapper
 #wrapper
   // Sidebar
   ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion
     // Sidebar - Brand
-    a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
+    a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='/')
       .sidebar-brand-icon.rotate-n-15
         i.fas.fa-book-open
       .sidebar-brand-text.mx-3 Elbi Library
@@ -36,7 +48,7 @@ head
     hr.sidebar-divider.my-0
     // Nav Item - Dashboard
     li.nav-item
-      a.nav-link(href='index.html')
+      a.nav-link(href='/')
         i.fas.fa-fw.fa-tachometer-alt
         span Dashboard
     // Divider
@@ -44,20 +56,15 @@ head
     // Heading
     .sidebar-heading Interface
     // Nav Item - Pages Collapse Menu
-    li.nav-item
-      a.nav-link.collapsed(href='#' data-toggle='collapse' data-target='#collapseTwo' aria-expanded='true' aria-controls='collapseTwo')
-        i.fas.fa-fw.fa-cog
-        span Components
-      #collapseTwo.collapse(aria-labelledby='headingTwo' data-parent='#accordionSidebar')
-        .bg-white.py-2.collapse-inner.rounded
-          h6.collapse-header Custom Components:
-          a.collapse-item(href='buttons.html') Buttons
-          a.collapse-item(href='cards.html') Cards
-    // Nav Item - Member
     li.nav-item.active
-      a.nav-link(href='member.html')
-        i.fas.fa-user-friends
-        span Member
+      a.nav-link(href='/member', data-toggle='collapse', data-target='#collapseTwo', aria-expanded='true', aria-controls='collapseTwo')
+        i.fas.fa-fw.fa-cog
+        span Library members
+      #collapseTwo.show.collapse(aria-labelledby='headingTwo', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+          h6.collapse-header Library members:
+          a.collapse-item.active(href='/member') Member
+          a.collapse-item(href='/class') Class
     // Divider
     hr.sidebar-divider.d-none.d-md-block
     // Sidebar Toggler (Sidebar)
@@ -76,7 +83,7 @@ head
         // Topbar Search
         form.d-none.d-sm-inline-block.form-inline.mr-auto.ml-md-3.my-2.my-md-0.mw-100.navbar-search
           .input-group
-            input.form-control.bg-light.border-0.small(type='text' placeholder='Search for...' aria-label='Search' aria-describedby='basic-addon2')
+            input.form-control.bg-light.border-0.small(type='text', placeholder='Search for...', aria-label='Search', aria-describedby='basic-addon2')
             .input-group-append
               button.btn.btn-primary(type='button')
                 i.fas.fa-search.fa-sm
@@ -84,19 +91,19 @@ head
         ul.navbar-nav.ml-auto
           // Nav Item - Search Dropdown (Visible Only XS)
           li.nav-item.dropdown.no-arrow.d-sm-none
-            a#searchDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+            a#searchDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
               i.fas.fa-search.fa-fw
             // Dropdown - Messages
             .dropdown-menu.dropdown-menu-right.p-3.shadow.animated--grow-in(aria-labelledby='searchDropdown')
               form.form-inline.mr-auto.w-100.navbar-search
                 .input-group
-                  input.form-control.bg-light.border-0.small(type='text' placeholder='Search for...' aria-label='Search' aria-describedby='basic-addon2')
+                  input.form-control.bg-light.border-0.small(type='text', placeholder='Search for...', aria-label='Search', aria-describedby='basic-addon2')
                   .input-group-append
                     button.btn.btn-primary(type='button')
                       i.fas.fa-search.fa-sm
           // Nav Item - Alerts
           li.nav-item.dropdown.no-arrow.mx-1
-            a#alertsDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+            a#alertsDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
               i.fas.fa-bell.fa-fw
               // Counter - Alerts
               span.badge.badge-danger.badge-counter 3+
@@ -128,7 +135,7 @@ head
               a.dropdown-item.text-center.small.text-gray-500(href='#') Show All Alerts
           // Nav Item - Messages
           li.nav-item.dropdown.no-arrow.mx-1
-            a#messagesDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+            a#messagesDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
               i.fas.fa-envelope.fa-fw
               // Counter - Messages
               span.badge.badge-danger.badge-counter 7
@@ -137,7 +144,7 @@ head
               h6.dropdown-header Message Center
               a.dropdown-item.d-flex.align-items-center(href='#')
                 .dropdown-list-image.mr-3
-                  img.rounded-circle(src='https://source.unsplash.com/fn_BT9fwg_E/60x60' alt='')
+                  img.rounded-circle(src='https://source.unsplash.com/fn_BT9fwg_E/60x60', alt='')
                   .status-indicator.bg-success
                 .font-weight-bold
                   .text-truncate
@@ -146,7 +153,7 @@ head
                   .small.text-gray-500 Emily Fowler &middot; 58m
               a.dropdown-item.d-flex.align-items-center(href='#')
                 .dropdown-list-image.mr-3
-                  img.rounded-circle(src='https://source.unsplash.com/AU4VPcFN4LE/60x60' alt='')
+                  img.rounded-circle(src='https://source.unsplash.com/AU4VPcFN4LE/60x60', alt='')
                   .status-indicator
                 div
                   .text-truncate
@@ -155,7 +162,7 @@ head
                   .small.text-gray-500 Jae Chun &middot; 1d
               a.dropdown-item.d-flex.align-items-center(href='#')
                 .dropdown-list-image.mr-3
-                  img.rounded-circle(src='https://source.unsplash.com/CS2uCrpNzJY/60x60' alt='')
+                  img.rounded-circle(src='https://source.unsplash.com/CS2uCrpNzJY/60x60', alt='')
                   .status-indicator.bg-warning
                 div
                   .text-truncate
@@ -164,21 +171,20 @@ head
                   .small.text-gray-500 Morgan Alvarez &middot; 2d
               a.dropdown-item.d-flex.align-items-center(href='#')
                 .dropdown-list-image.mr-3
-                  img.rounded-circle(src='https://source.unsplash.com/Mv9hjnEUHR4/60x60' alt='')
+                  img.rounded-circle(src='https://source.unsplash.com/Mv9hjnEUHR4/60x60', alt='')
                   .status-indicator.bg-success
                 div
                   .text-truncate
                     | Am I a good boy? The reason I ask is because someone
                     | told me that people say this to all dogs, even if they
                     | aren&apos;t good...
-                  .small.text-gray-500
-                    | Chicken the Dog &middot; 2w
+                  .small.text-gray-500 Chicken the Dog &middot; 2w
               a.dropdown-item.text-center.small.text-gray-500(href='#') Read More Messages
           .topbar-divider.d-none.d-sm-block
           // Nav Item - User Information
           li.nav-item.dropdown.no-arrow
-            a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-              span.mr-2.d-none.d-lg-inline.text-gray-600.small Valerie Luna
+            a#userDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+              span.mr-2.d-none.d-lg-inline.text-gray-600.small Rhafael Bijaksana
               img.img-profile.rounded-circle(src='https://source.unsplash.com/QAB-WJcbgJk/60x60')
             // Dropdown - User Information
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
@@ -192,7 +198,7 @@ head
                 i.fas.fa-list.fa-sm.fa-fw.mr-2.text-gray-400
                 |                     Activity Log
               .dropdown-divider
-              a.dropdown-item(href='#' data-toggle='modal' data-target='#logoutModal')
+              a.dropdown-item(href='#', data-toggle='modal', data-target='#logoutModal')
                 i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
                 |                     Logout
       // End of Topbar
@@ -203,46 +209,18 @@ head
           h1.h3.mb-0.text-gray-800 Member
           .actionMenu
             // Add Member
-            button.btn.btn-primary.mr-2(type='button' data-toggle='modal' data-target='#addMember')
+            button.btn.btn-primary.mr-1(type='button', data-toggle='modal', data-target='#addMember' , title ="Add library members" aria-describe="Add library members")
               span.icon.text-white-50.mr-1
                 i.fas.fa-user
               span.text Add Member
             // End add member
             // Remove All
-            button#deleteModalByButton.btn.btn-danger(type='button' data-toggle='modal' data-target='#removeMember')
+            button#deleteModalByButton.btn.btn-danger(type='button', data-toggle='modal', data-target='#removeMember', title="Remove class-based members or based on selected rows", aria-describe="Remove class-based members or based on selected rows")
               span.icon.text-white-50.mr-1
                 i.fas.fa-users-slash
               span.text Delete by
             // End of remove all
         // Button trigger modal
-        // Modal
-        #addMember.modal.fade(tabindex='-1' role='dialog' aria-labelledby='addMemberLabel' aria-hidden='true')
-          .modal-dialog(role='document')
-            .modal-content
-              .modal-header
-                h5#exampleModalLabel.modal-title
-                  | Add Member
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                  span(aria-hidden='true') &times;
-              .modal-body
-                .form-group
-                  label(for='InputFullname') Fullname: 
-                  input#InputFullname.form-control(type='fullname' aria-describedby='Fullname' placeholder='Enter Fullname')
-                .form-group
-                  label(for='class') Class: 
-                  input#class.form-control(type='text' placeholder='Class')
-                .form-group
-                  label(for='dateOfBirth') Date of birth: 
-                  input#dateOfBirth.form-control(type='text' placeholder='date of birth')
-                .form-group
-                  label(for='address') Address: 
-                  input#address.form-control(type='text' placeholder='Address')
-              .modal-footer
-                button.btn.btn-secondary(type='button' data-dismiss='modal')
-                  | Close
-                button.btn.btn-primary(type='button')
-                  | Add Member
-        // End Of Modal
         // DataTales Example
         .card.shadow.mb-4
           .card-header.py-3.d-sm-flex.align-items-center.justify-content-between
@@ -250,9 +228,11 @@ head
             h6#rowSelect.m-0.font-weight-bold.text-primary
           .card-body
             .table-responsive
-              table#dataTable.table.table-bordered(width='100%' cellspacing='0')
+              table#dataTable.table.table-bordered(width='100%', cellspacing='0')
                 thead
                   tr
+                    th No
+                    th Member number
                     th FullName
                     th Class
                     th Date of birth
@@ -260,6 +240,8 @@ head
                     th Action
                 tfoot
                   tr
+                    th No
+                    th Member number
                     th FullName
                     th Class
                     th Date of birth
@@ -267,64 +249,40 @@ head
                     th Action
                 tbody
                   tr
-                    td Olivia Liang
+                    td
+                    td.tableNomorAnggota 67115
+                    td.tableNamaAnggota Olivia Liang
                     td.tableClass 12 Rpl 2
-                    td Kalimantan, 03 Desember 2003
-                    td 5640 Bell Views
+                    td.tableTtlAnggota Kalimantan, 03 Desember 2003
+                    td.tableAlamatAnggota 5640 Bell Views
                     td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit
+                      button.btn.btn-primary.btn-sm.btn-circle.edit(title="Edit related users", aria-describe="Edit related users")
                         i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete
+                      button.btn.btn-danger.btn-sm.btn-circle.delete(title="Remove related users", aria-describe="Remove related users")
                         i.fas.fa-trash
                   tr
-                    td Rhafael
+                    td
+                    td.tableNomorAnggota 96438
+                    td.tableNamaAnggota Rhafael
                     td.tableClass 12 Rpl 1
-                    td legok, 03 Desember 2003
-                    td 5640 Bell Vis
+                    td.tableTtlAnggota legok, 03 Desember 2003
+                    td.tableAlamatAnggota 5640 Bell Vis
                     td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit.mr-2
+                      button.btn.btn-primary.btn-sm.btn-circle.edit(title="Edit related users", aria-describe="Edit related users")
                         i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete
+                      button.btn.btn-danger.btn-sm.btn-circle.delete(title="Remove related users", aria-describe="Remove related users")
                         i.fas.fa-trash
                   tr
-                    td Kiel Blick
+                    td
+                    td.tableNomorAnggota 65337
+                    td.tableNamaAnggota Kiel Blick
                     td.tableClass 12 Rpl 3
-                    td Kalimantan, 03 Desember 2003
-                    td 5640 Bell Views
+                    td.tableTtlAnggota Kalimantan, 03 Desember 2003
+                    td.tableAlamatAnggota 5640 Bell Views
                     td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit
+                      button.btn.btn-primary.btn-sm.btn-circle.edit(title="Edit related users", aria-describe="Edit related users")
                         i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete
-                        i.fas.fa-trash
-                  tr
-                    td Effie Flatley
-                    td.tableClass 12 Rpl 1
-                    td legok, 03 Desember 2003
-                    td 5640 Bell Vis
-                    td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit
-                        i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete
-                        i.fas.fa-trash
-                  tr
-                    td Ray Gleason DDS
-                    td.tableClass 12 Rpl 2
-                    td Kalimantan, 03 Desember 2003
-                    td 5640 Bell Views
-                    td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit
-                        i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete
-                        i.fas.fa-trash
-                  tr
-                    td Easton Donnelly II
-                    td.tableClass 12 Rpl 3
-                    td legok, 03 Desember 2003
-                    td 5640 Bell Vis
-                    td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit
-                        i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete
+                      button.btn.btn-danger.btn-sm.btn-circle.delete(title="Remove related users", aria-describe="Remove related users")
                         i.fas.fa-trash
       // /.container-fluid
     // End of Main Content
@@ -333,108 +291,130 @@ head
       .container.my-auto
         .copyright.text-center.my-auto
           span
-            | Copyright &copy; By Elbi 2020 | made with love  
+            | Copyright &copy; By Elbi 2020 | made with love
             i.fas.fa-heart
-// End of Footer
-// End of Content Wrapper
+    // End of Footer
+  // End of Content Wrapper
 // End of Page Wrapper
 // Scroll to Top Button
 a.scroll-to-top.rounded(href='#page-top')
   i.fas.fa-angle-up
 // Logout Modal
-#logoutModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true')
+#logoutModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
         h5#exampleModalLabel.modal-title Ready to Leave?
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body Select &quot;Logout&quot; below if you are ready to end your current session.
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+        a.btn.btn-primary(href='login.html') Logout
+// Modal
+#addMember.modal.fade(tabindex='-1', role='dialog', aria-labelledby='addMemberLabel', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#exampleModalLabel.modal-title Add Member
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') &times;
       .modal-body
-        | Select &quot;Logout&quot; below if you are ready to end your current session.
+        .form-group
+          label(for='InputFullname') Fullname: 
+          input#InputFullname.form-control(type='fullname', aria-describedby='Fullname', placeholder='Enter Fullname')
+        .form-group
+          label(for='inputClass') Class :
+          select#inputClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteByClass', aria-controls='dataTable')
+            option(value='12 Rpl 1') 12 Rpl 1
+            option(value='12 Rpl 2') 12 Rpl 2
+            option(value='12 Rpl 3') 12 Rpl 3
+        .form-group
+          label(for='inputDate') Date of birth: 
+          input#inputDate.form-control(type='text', placeholder='date of birth')
+        .form-group
+          label(for='inputAddress') Address: 
+          input#inputAddress.form-control(type='text', placeholder='Address')
       .modal-footer
-        button.btn.btn-secondary(type='button' data-dismiss='modal')
-          | Cancel
-        a.btn.btn-primary(href='login.html') Logout
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+        button.btn.btn-primary(type='button') Add Member
+        // End Of Modal
 // Modal Edit
-#editModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='editModal' aria-hidden='true')
+#editModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='editModal', aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
         h5#editModal.modal-title Edit Member
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') &times;
       .modal-body
         .form-group
           label(for='EditInputFullname') Fullname: 
-          input#EditInputFullname.form-control(type='fullname' aria-describedby='Fullname' placeholder='Enter Fullname')
+          input#EditInputFullname.form-control(type='fullname', aria-describedby='Fullname', placeholder='Enter Fullname')
         .form-group
           label(for='Editclass') Class: 
-          input#Editclass.form-control(type='text' placeholder='Class')
+          input#Editclass.form-control(type='text', placeholder='Class')
         .form-group
           label(for='EditdateOfBirth') Date of birth: 
-          input#EditdateOfBirth.form-control(type='text' placeholder='date of birth')
+          input#EditdateOfBirth.form-control(type='text', placeholder='date of birth')
         .form-group
           label(for='Editaddress') Address: 
-          input#Editaddress.form-control(type='text' placeholder='Address')
+          input#Editaddress.form-control(type='text', placeholder='Address')
       .modal-footer
-        button.btn.btn-secondary(type='button' data-dismiss='modal')
-          | Close
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
         button.btn.btn-primary(type='button') Update Member
 // End Of Update Modal
 // 
 // Modal Delete
-#deleteModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='deleteModal' aria-hidden='true')
+#deleteModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteModal', aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
         h5#deleteModal.modal-title Delete
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') &times;
       .modal-body
       .modal-footer
-        button.btn.btn-secondary(type='button' data-dismiss='modal')
-          | Close
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
         button.btn.btn-danger(type='button') Delete User
 // Akhir Modal Delete
 // Awal Modal Delete By
-#deleteModalBy.modal.fade(tabindex='-1' role='dialog' aria-labelledby='deleteModal By' aria-hidden='true')
+#deleteModalBy.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteModal By', aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
         h5#deleteModalBy.modal-title Delete By
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') &times;
       .modal-body
         .form-group
           label(for='deleteBy') Delete By :
-          select#deleteBy.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteBy' aria-controls='dataTable')
+          select#deleteBy.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteBy', aria-controls='dataTable')
             option(value='class') Class
             option(value='rows') Delete by selected row
         .form-group
           label(for='deleteByClass') Class :
-          select#deleteByClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteByClass' aria-controls='dataTable')
+          select#deleteByClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteByClass', aria-controls='dataTable')
             option(value='12 Rpl 1') 12 Rpl 1
             option(value='12 Rpl 2') 12 Rpl 2
             option(value='12 Rpl 3') 12 Rpl 3
         .form-group
           .alert.alert-danger(role='alert')
       .modal-footer
-        button.btn.btn-secondary(type='button' data-dismiss='modal')
-          | Close
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
         button.btn.btn-danger(type='button') Delete User
 // Modal Multiguna
 // Modal
-#multiguna.modal.fade(tabindex='-1' role='dialog' aria-labelledby='multiguna' aria-hidden='true')
+#multiguna.modal.fade(tabindex='-1', role='dialog', aria-labelledby='multiguna', aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
         h5#multiguna.modal-title Attention
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') &times;
       .modal-body Please select a row first 
       .modal-footer
-        button.btn.btn-secondary(type='button' data-dismiss='modal')
-          | Close
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
 // Bootstrap core JavaScript
 script(src='/assets/vendor/jquery/jquery.min.js')
 script(src='/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')
@@ -447,4 +427,4 @@ script(src='/assets/vendor/datatables/jquery.dataTables.min.js')
 script(src='/assets/vendor/datatables/dataTables.bootstrap4.min.js')
 // Page level custom scripts
 script(src='/assets/js/demo/datatables-demo.js')
-script(src='/assets/js/table.js')
+script(src='/assets/js/member.js')

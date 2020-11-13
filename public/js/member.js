@@ -3,9 +3,8 @@
 
 
 
-// Perubahan Terakhir terjadi pada 10/11/2020
-// + Fitur yang masih kurang yaitu Jika user memicu modal untuk tampil
-// + dan user mengklik Button close maka baris yang telah diselect harus dihilangkan
+// Perubahan Terakhir terjadi pada 12/11/2020
+// BUG : Tidak dapat menonaktifkan order pada coloum pertama
 
 
 
@@ -25,7 +24,7 @@ $(document).on("click", "button.edit", function (e) {
 
 //  Event Untuk Tombol Action Delete
 $(document).on("click", "button.delete", function (e) {
-  let user = $(this).parent().prevAll().last().text();
+  let user = $(this).parent().prevAll('.tableNamaAnggota').text();
   $('#deleteModal div div.modal-content div.modal-body')
     .html(`Are you sure you want to remove <strong>${user}</strong> from the library members ?`);
   $("#deleteModal").modal("toggle");
@@ -54,7 +53,7 @@ $("table#dataTable > tbody > tr").on("click", function (e) {
 // Modal Box Delete By
 $("#deleteModalByButton").on("click", function (e) {
   let rowActive = $("table#dataTable > tbody > tr.active").length;
-  let coloumName = $("table#dataTable > tbody > tr.active td:first-child");
+  let coloumName = $("table#dataTable > tbody > tr.active");
   let searchByColoum = cariBaris("#dataTable tbody tr", ".tableClass", '12 Rpl 1');
   let group = $('#deleteModalBy div div.modal-content div.modal-body .form-group:eq(1)');
 
@@ -73,17 +72,11 @@ $("#deleteModalByButton").on("click", function (e) {
 
 
 // Event Select Option Class
-$('#deleteByClass').on('change' , function(e){
-  let value = cariBaris("#dataTable tbody tr", ".tableClass", $(this).val());
-  tampilkanNama(value, 2, false);
-});
-
 // Event Select Option By
 $('#deleteBy').on('change', function(e){
   let value = $(this).val();
   let alertSelection = $('#deleteModalBy div div.modal-content div.modal-body .form-group:eq(1)');
   let rows = $("table#dataTable > tbody > tr.active");
-  let one = $(("table#dataTable > tbody > tr.active td:first-child"));
 
   // Jika Nilainya sama dengan 'rows'
   if(value == 'rows') {
@@ -92,7 +85,7 @@ $('#deleteBy').on('change', function(e){
       $("#deleteModalBy").modal("hide");
       $('#multiguna').modal('toggle');
     } else {
-      tampilkanNama(one, 1, false);
+      tampilkanNama(rows, 1, false);
       alertSelection.css('display', 'none');
     }
 
@@ -106,6 +99,10 @@ $('#deleteBy').on('change', function(e){
   }
 });
 
+$('#deleteByClass').on('change', function(e){
+  let value = cariBaris("#dataTable tbody tr", ".tableClass", $(this).val());
+  tampilkanNama(value, 2, false);
+});
 
 // Hilangkan class aktif saat user mengklik tombol close
 $('#deleteModalBy .modal-footer button:first-child, #deleteModalBy .modal-header button').on('click' , function(e){
@@ -125,7 +122,7 @@ $('#deleteModalBy .modal-footer button:first-child, #deleteModalBy .modal-header
 function tampilkanNama(user1, state, toggleee) {
   let namaUser = "";
   $.each(user1, function (i, e) {
-    let user = state == 1 ? $(e).text() : e;
+    let user = state == 1 ? $(e).children('.tableNamaAnggota').text() : e;
     if (user1.length > 5) {
       if (i === 1) namaUser += `${user}, ... ,`;
       if (i === user1.length - 1) namaUser += `${user}`;
@@ -151,12 +148,12 @@ function cariBaris(querySearch, coloum, search){
   querySearch = $(querySearch);
   let value = [];
   $.each(querySearch, function (i, e) {
-    if ($(e).children(coloum).text() == search) value.push($(e).children().first().text());
+    if ($(e).children(coloum).text() == search) value.push($(e).children('.tableNamaAnggota').text());
   });
   return value
 }
 
-
+// Fungsinya adalah untuk memberikan disabled pada beberapa tombol
 function disabledOrNo(state) {
   let tombolAction = $("table#dataTable > tbody > tr > td.actionTable");
   if(state){
