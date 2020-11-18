@@ -411,7 +411,7 @@
             <div
               class="d-sm-flex align-items-center justify-content-between mb-4"
             >
-              <h1 class="h3 mb-0 text-gray-800">Class</h1>
+              <h1 class="h3 mb-0 text-gray-800">Class Category</h1>
               <div class="actionMenu">
                 <!-- Add Member -->
                 <button
@@ -426,21 +426,6 @@
                   <span class="text">Add Class</span>
                 </button>
                 <!--  End add member -->
-
-                <!-- Remove All -->
-                <button
-                  type="button"
-                  class="btn btn-danger"
-                  data-toggle="modal"
-                  data-target="#removeMember"
-                  id="deleteModalByButton"
-                >
-                  <span class="icon text-white-50 mr-1">
-                    <i class="fas fa-users-slash"></i>
-                  </span>
-                  <span class="text">Delete by</span>
-                </button>
-                <!--  End of remove all -->
               </div>
             </div>
             <!-- Button trigger modal -->
@@ -466,29 +451,24 @@
                     <thead>
                       <tr>
                         <th>No</th>
-                        <th></th>
-                        <th>Kode</th>
-                        <th>Judul</th>
-                        <th>Category</th>
-                        <th>Date</th>
-                        <th></th>
+                        <th>Class Name</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tfoot>
                       <tr>
                         <th>No</th>
-                        <th></th>
-                        <th>Kode</th>
-                        <th>Judul</th>
-                        <th>Category</th>
-                        <th>Date</th>
-                        <th></th>
+                        <th>Class Name</th>
                         <th>Action</th>
                       </tr>
                     </tfoot>
                     <tbody>
-
+                        <td>1</td>
+                        <td>12 Rpl 1</td>
+                        <td class="text-center actionTable">
+                          <button class="btn btn-primary btn-sm btn-circle edit" title="Edit related users" aria-describe="Edit related users"><i class="fas fa-edit"></i></button>
+                          <button class="btn btn-danger btn-sm btn-circle delete" title="Remove related users" aria-describe="Remove related users"><i class="fas fa-trash"></i></button>
+                        </td>
                     </tbody>
                   </table>
                 </div>

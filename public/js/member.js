@@ -3,10 +3,7 @@
 
 
 
-// Perubahan Terakhir terjadi pada 12/11/2020
-// BUG : Tidak dapat menonaktifkan order pada coloum pertama
-
-
+// Perubahan Terakhir terjadi pada 17/11/2020
 
 
 
@@ -17,7 +14,7 @@ $(document).on("click", "button.edit", function (e) {
   let [adress, date, className, fullname] = test;
 
   $("#EditInputFullname").val($(fullname).text());
-  $("#Editclass").val($(className).text());
+  $("#EditClass").val($(className).text());
   $("#EditdateOfBirth").val($(date).text());
   $("#Editaddress").val($(adress).text());
 });
@@ -45,25 +42,25 @@ $("table#dataTable > tbody > tr").on("click", function (e) {
 
     // Tampilkan Jumlah Rows / Hilangkan Jika tidak ada baris yang dipilih
     let jumlahRows = $("table#dataTable > tbody > tr.active").length;
-    if (jumlahRows <= 0) $("#rowSelect").html(``);
-    else $("#rowSelect").html(`${jumlahRows} rows selected`);
+    if (jumlahRows <= 0) $("#rowSelect").css('opacity', '0');
+    else $("#rowSelect").html(`${jumlahRows} rows selected`).css('opacity', '1');
   }
 });
 
 // Modal Box Delete By
 $("#deleteModalByButton").on("click", function (e) {
-  let rowActive = $("table#dataTable > tbody > tr.active").length;
-  let coloumName = $("table#dataTable > tbody > tr.active");
+  let rowActive = $("table#dataTable > tbody > tr.active");
+  // let coloumName = $("table#dataTable > tbody > tr.active");
   let searchByColoum = cariBaris("#dataTable tbody tr", ".tableClass", '12 Rpl 1');
   let group = $('#deleteModalBy div div.modal-content div.modal-body .form-group:eq(1)');
 
   // Jika anda baris yang aktif
-  if (rowActive >= 1){ 
-    tampilkanNama(coloumName, 1, true);
+  if ($(rowActive).length >= 1){ 
+    tampilkanNama(rowActive, 1, true);
     $("#deleteBy").val("rows");
     group.css('display', 'none')
   };
-  if (rowActive === 0) {
+  if ($(rowActive).length === 0) {
     $("#deleteBy").val("class");
     group.css('display', 'block')
     return tampilkanNama(searchByColoum, 2, true)
@@ -107,11 +104,43 @@ $('#deleteByClass').on('change', function(e){
 // Hilangkan class aktif saat user mengklik tombol close
 $('#deleteModalBy .modal-footer button:first-child, #deleteModalBy .modal-header button').on('click' , function(e){
   disabledOrNo(false)
-  let rowsActive = $('table#dataTable > tbody > tr.active');
-  $.each(rowsActive, (i, e) => $(e).removeClass('active'));
+  $('table#dataTable > tbody > tr.active').removeClass('active');
   $("#rowSelect").html(``);
-})
+});
 
+
+// // Event saat 
+// $('#modifyClass').on('click', function(event){
+//   $('#modifyClassModal').modal('toggle');
+//   console.log($(this).css('display', 'inline-block'))
+// })
+
+$('#modifyAction').on('change', function(event){
+ let value = $(this).val();
+ let modalBody = $('#modifyClassModal .modal-body');
+ 
+ // Jika nilainya add
+ if(value === 'Add') {
+   $(modalBody).children('.modifyAddClass').removeClass('d-none');
+   $(modalBody).children('.modifyClass').addClass('d-none')
+   $(modalBody).children('.modifyAddClass').children('label').html('Add Class :');
+  }
+  // Jika nilai nya delete
+  if(value === 'Delete') {
+    $(modalBody).children('.modifyAddClass').addClass('d-none');
+    $(modalBody).children('.modifyClass').removeClass('d-none');
+  }
+  
+  // Jika nilainya update
+  if(value === 'U-pdate') {
+    $(modalBody).children('.modifyAddClass').removeClass('d-none');
+    $(modalBody).children('.modifyClass').removeClass('d-none');
+    $(modalBody).children('.modifyAddClass').children('label').html('Update Class :');
+  }
+
+
+  $('#modifyClassModal .modal-footer button:last-child').html(`${value} class`)
+})
 
 
 // Fungsi Utama adalah untuk mengambil nama dari kelas yang aktif
@@ -155,12 +184,6 @@ function cariBaris(querySearch, coloum, search){
 
 // Fungsinya adalah untuk memberikan disabled pada beberapa tombol
 function disabledOrNo(state) {
-  let tombolAction = $("table#dataTable > tbody > tr > td.actionTable");
-  if(state){
-    $.each($(tombolAction).children(), (i, e) => $(e).prop("disabled", true).css("cursor", "not-allowed"));
-    $('.actionMenu button:first-child').prop('disabled', true).css('cursor' , 'not-allowed');
-  } else {
-    $('.actionMenu button:first-child').removeAttr('style').removeAttr('disabled')
-    $.each($(tombolAction).children(), (i, e) => $(e).removeAttr("disabled").removeAttr("style"));
-  }
+  if(state) $('.disableButton').prop('disabled', true).css('cursor' , 'not-allowed');
+  else $('.disableButton').removeAttr('style').removeAttr('disabled')
 }
