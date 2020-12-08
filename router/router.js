@@ -5,11 +5,19 @@ const port = process.env.APP_PORT || 3000;
 const member = require('../middleware/member');
 const index = require('../middleware/index');
 const book = require('../middleware/book');
+const fs = require('fs');
+const { data } = require('jquery');
 
 module.exports = function (app) {
   app.get("/", index)
   app.get("/member", member);
-  app.get('/class', book)
+  app.get('/book', book);
+  app.get('/data' , function(req, res){
+    fs.readFile( __dirname + '/../views/data-demo.txt' , {encoding: 'utf-8'}, function(err, data){
+      if(err) throw err;
+      res.send(data)
+    })
+  })
 
   app.listen(port, (err) => {
     if (err) throw err;

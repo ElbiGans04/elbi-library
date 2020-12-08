@@ -4,12 +4,12 @@ head
   meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
   meta(name='description', content='')
   meta(name='author', content='')
-  title Elbi Library | Member
+  title Elbi Library | Book
   link(href='/assets/vendor/fontawesome-free/css/all.min.css', rel='stylesheet', type='text/css')
   link(href='/assets/font/font.css', rel='stylesheet')
   link(href='/assets/css/sb-admin-2.min.css', rel='stylesheet')
   link(href='/assets/vendor/datatables/dataTables.bootstrap4.min.css', rel='stylesheet')
-  link(href='/assets/css/style-member.css', rel='stylesheet')
+  link(href='/assets/css/style-book.css', rel='stylesheet')
 
 
 // Page Wrapper
@@ -32,11 +32,11 @@ head
     hr.sidebar-divider
     // Heading
     .sidebar-heading Data
-    li.nav-item.active
+    li.nav-item
       a.nav-link(href='/member')
         i.fas.fa-users
         span Member
-    li.nav-item
+    li.nav-item.active
       a.nav-link(href='/book')
         i.fas.fa-book
         span Book
@@ -181,19 +181,19 @@ head
       .container-fluid
         // Page Heading
         .d-sm-flex.align-items-center.justify-content-between.mb-4
-          h1.h3.mb-0.text-gray-800 Library members
+          h1.h3.mb-0.text-gray-800 List of library books
           .actionMenu
             // Class
             button.btn.btn-primary.disableButton#modifyClass(type='button', data-toggle='modal', data-target='#modifyClassModal' , title ="Modify library members" aria-describe="Modify library members")
               span.icon.text-white-50
-                i.fas.fa-users
-              span.text Class
+                i.fas.fa-clipboard
+              span.text Category
             
             // Add Member
             button.btn.btn-primary.disableButton(type='button', data-toggle='modal', data-target='#addMember' , title ="Add library members" aria-describe="Add library members")
               span.icon.text-white-50
-                i.fas.fa-user
-              span.text Add Member
+                i.fas.fa-book
+              span.text Add Book
             // End add member
             // Remove All
             button#deleteModalByButton.btn.btn-danger(type='button', data-toggle='modal', data-target='#removeMember', title="Remove class-based members or based on selected rows", aria-describe="Remove class-based members or based on selected rows")
@@ -205,7 +205,7 @@ head
         // DataTales Example
         .card.shadow.mb-4
           .card-header.py-3.d-sm-flex.align-items-center.justify-content-between
-            h6.m-0.font-weight-bold.text-primary List Member
+            h6.m-0.font-weight-bold.text-primary List Book
             .sorting.d-flex.justify-content-center.align-items-center
               h6#rowSelect.font-weight-bold.text-primary.mb-0 1 rows selected
               select#inputClass.custom-select.custom-select-sm.form-control.form-control-sm.ml-3(name='deleteByClass', aria-controls='dataTable')
@@ -215,62 +215,25 @@ head
                 option(value='12 Rpl 3') 12 Rpl 3         
           .card-body
             .table-responsive
-              table#dataTable.table.table-bordered(width='100%', cellspacing='0')
+              table#example.table.table-bordered(width='100%', cellspacing='0').display
                 thead
                   tr
-                    th No
-                    th Member number
-                    th FullName
-                    th Class
-                    th Date of birth
-                    th Address
-                    th Action
+                    th 
+                    th name
+                    th position
+                    th office
+                    th office
+                    
                 tfoot
                   tr
-                    th No
-                    th Member number
-                    th FullName
-                    th Class
-                    th Date of birth
-                    th Address
-                    th Action
+                    th 
+                    th name
+                    th position
+                    th office
+                    th office
+                    
                 tbody
-                  tr
-                    td
-                    td.tableNomorAnggota 67115
-                    td.tableNamaAnggota Olivia Liang
-                    td.tableClass 12 Rpl 2
-                    td.tableTtlAnggota Kalimantan, 03 Desember 2003
-                    td.tableAlamatAnggota 5640 Bell Views
-                    td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit.disableButton(title="Modify related users", aria-describe="Modify related users")
-                        i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete.disableButton(title="Remove related users", aria-describe="Remove related users")
-                        i.fas.fa-trash
-                  tr
-                    td
-                    td.tableNomorAnggota 96438
-                    td.tableNamaAnggota Rhafael
-                    td.tableClass 12 Rpl 1
-                    td.tableTtlAnggota legok, 03 Desember 2003
-                    td.tableAlamatAnggota 5640 Bell Vis
-                    td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit.disableButton(title="Modify related users", aria-describe="Modify related users")
-                        i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete.disableButton(title="Remove related users", aria-describe="Remove related users")
-                        i.fas.fa-trash
-                  tr
-                    td
-                    td.tableNomorAnggota 65337
-                    td.tableNamaAnggota Kiel Blick
-                    td.tableClass 12 Rpl 3
-                    td.tableTtlAnggota Kalimantan, 03 Desember 2003
-                    td.tableAlamatAnggota 5640 Bell Views
-                    td.text-center.actionTable
-                      button.btn.btn-primary.btn-sm.btn-circle.edit.disableButton(title="Modify related users", aria-describe="Modify related users")
-                        i.fas.fa-edit
-                      button.btn.btn-danger.btn-sm.btn-circle.delete.disableButton(title="Remove related users", aria-describe="Remove related users")
-                        i.fas.fa-trash
+                 
       // /.container-fluid
     // End of Main Content
     // Footer
@@ -397,7 +360,7 @@ a.scroll-to-top.rounded(href='#page-top')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
-        h5.modal-title Modify Class
+        h5.modal-title Modify Category
         button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') &times;
       .modal-body
@@ -442,4 +405,4 @@ script(src='/assets/vendor/datatables/jquery.dataTables.min.js')
 script(src='/assets/vendor/datatables/dataTables.bootstrap4.min.js')
 // Page level custom scripts
 script(src='/assets/js/demo/data-tables-member.js')
-script(src='/assets/js/member.js')
+script(src='/assets/js/book.js')
