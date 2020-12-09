@@ -2,7 +2,7 @@
 $(document).ready(function() {
   let table = $('#dataTable').DataTable({
     "columnDefs": [
-      { "orderable": false, "targets": 0 }
+      { "orderable": false, "targets": [0,6] }
     ], // jangan lupa tambahkan koma terlebih dahulu
     "order": [[2, 'asc']],
     // "bPaginate": false, untuk pagination

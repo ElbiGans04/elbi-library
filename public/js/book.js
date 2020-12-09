@@ -7,8 +7,14 @@ function format ( d ) {
 $(document).ready(function() {
     var dt = $('#example').DataTable( {
         "processing": true,
-        "serverSide": true,
-        "ajax": "/data",
+        // "serverSide": true,
+        "ajax": {
+            "url" : "/data",
+            "method": "post",
+            "xhrFields": {
+                withCredentials: true
+            }
+        },
         "columns": [ 
             {
                 "class":          "details-control",
@@ -17,9 +23,9 @@ $(document).ready(function() {
                 "defaultContent": ""
             },
             { "data": "first_name" },
-            { "data": "last_name" },
             { "data": "position" },
-            { "data": "office" }
+            { "data": "office" },
+            { "data": "salary" }
         ],
         "order": [[1, 'asc']]
     } )
@@ -31,7 +37,6 @@ $(document).ready(function() {
         var tr = $(this).closest('tr');
         var row = dt.row( tr );
         var idx = $.inArray( tr.attr('id'), detailRows );
-        console.log(tr)
  
         if ( row.child.isShown() ) {
             tr.removeClass( 'details' );
