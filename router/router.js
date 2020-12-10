@@ -5,19 +5,19 @@ const port = process.env.APP_PORT || 3000;
 const member = require("../middleware/member");
 const index = require("../middleware/index");
 const book = require("../middleware/book");
-const fs = require("fs");
-const query = require("querystring");
+const data = require("../middleware/data");
+const render = require('../middleware/renderWeb');
+const renderWeb = require("../middleware/renderWeb");
+
 
 module.exports = function (app) {
   app.get("/", index);
   app.get("/member", member);
   app.get("/book", book);
-  app.post("/data", function (req, res) {
-    fs.readFile(__dirname + '/../views/data-demo.json', {encoding: 'utf-8'}, function(err, data){
-      if(err) throw err;
-      res.send(data)
-    })
-  });
+  app.post("/data", data);
+  app.get("/example" , function(req, res){
+    res.render('index', {title: 'Elbi Library | Member', active: 'member' ,component: renderWeb('member')})
+  })
 
   app.listen(port, (err) => {
     if (err) throw err;

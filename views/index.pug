@@ -5,18 +5,17 @@ head
   meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
   meta(name='description', content='')
   meta(name='author', content='')
-  title Elbi Library | Dashboard
-  // Custom fonts for this template
+  title #{title}
   link(href='/assets/vendor/fontawesome-free/css/all.min.css', rel='stylesheet', type='text/css')
   link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i', rel='stylesheet')
-  // Custom styles for this template
   link(href='/assets/css/sb-admin-2.min.css', rel='stylesheet')
-  // Custom styles for this page
   link(href='/assets/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
+  for cs in component.css
+    link(href=cs rel='stylesheet')
 // Page Wrapper
 #wrapper
   // Sidebar
-  ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion
+  ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion(navbarActive=active)
     // Sidebar - Brand
     a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
       .sidebar-brand-icon.rotate-n-15
@@ -25,29 +24,22 @@ head
     // Divider
     hr.sidebar-divider.my-0
     // Nav Item - Dashboard
-    li.nav-item
+    li.nav-item(name="dashboard")
       a.nav-link(href='/')
         i.fas.fa-fw.fa-tachometer-alt
         span.ml-1 Dashboard
     // Divider
     hr.sidebar-divider
     // Heading
-    .sidebar-heading Interface
-    // Nav Item - Pages Collapse Menu
-    li.nav-item
-      a.nav-link.collapsed(href='#' data-toggle='collapse' data-target='#collapseTwo' aria-expanded='true' aria-controls='collapseTwo')
-        i.fas.fa-fw.fa-cog
-        span.ml-1 Components
-      #collapseTwo.collapse(aria-labelledby='headingTwo' data-parent='#accordionSidebar')
-        .bg-white.py-2.collapse-inner.rounded
-          h6.collapse-header Custom Components:
-          a.collapse-item(href='buttons.html') Buttons
-          a.collapse-item(href='cards.html') Cards
-    // Nav Item - Member
-    li.nav-item.active
+    .sidebar-heading Data
+    li.nav-item(name="member")
       a.nav-link(href='/member')
-        i.fas.fa-user-friends
-        span.ml-1 Member
+        i.fas.fa-users
+        span Member
+    li.nav-item(name="book")
+      a.nav-link(href='/book')
+        i.fas.fa-book
+        span Book
     // Divider
     hr.sidebar-divider.d-none.d-md-block
     // Sidebar Toggler (Sidebar)
@@ -187,9 +179,9 @@ head
                 |                     Logout
       // End of Topbar
       // Begin Page Content
-      .container-fluid
-        // Page Heading
-        h1.h3.mb-4.text-gray-800 Blank Page
+      .container-fluid !{component.body}
+
+        
       // /.container-fluid
     // End of Main Content
     // Footer
@@ -219,10 +211,152 @@ a.scroll-to-top.rounded(href='#page-top')
         button.btn.btn-secondary(type='button', data-dismiss='modal')
           | Cancel
         a.btn.btn-primary(href='login.html') Logout
-// Bootstrap core JavaScript
+
+// Custom Modal
+// Add Modal
+#addMember.modal.fade(tabindex='-1', role='dialog', aria-labelledby='addMemberLabel', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#exampleModalLabel.modal-title Add Member
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+        .form-group
+          label(for='InputFullname') Fullname: 
+          input#InputFullname.form-control(type='fullname', aria-describedby='Fullname', placeholder='Enter Fullname')
+        .form-group
+          label(for='inputClass') Class :
+          select#inputClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteByClass', aria-controls='dataTable')
+            option(value='12 Rpl 1') 12 Rpl 1
+            option(value='12 Rpl 2') 12 Rpl 2
+            option(value='12 Rpl 3') 12 Rpl 3
+        .form-group
+          label(for='inputDate') Date of birth: 
+          input#inputDate.form-control(type='text', placeholder='date of birth')
+        .form-group
+          label(for='inputAddress') Address: 
+          input#inputAddress.form-control(type='text', placeholder='Address')
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+        button.btn.btn-primary(type='button') Add Member
+        // End Of Modal
+// Edit Modal
+#editModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='editModal', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#editModal.modal-title Edit Member
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+        .form-group
+          label(for='EditInputFullname') Fullname: 
+          input#EditInputFullname.form-control(type='fullname', aria-describedby='Fullname', placeholder='Enter Fullname')
+        .form-group
+          label(for='Editclass') Class: 
+          select#EditClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteByClass', aria-controls='dataTable')
+            option(value='12 Rpl 1') 12 Rpl 1
+            option(value='12 Rpl 2') 12 Rpl 2
+            option(value='12 Rpl 3') 12 Rpl 3
+        .form-group
+          label(for='EditdateOfBirth') Date of birth: 
+          input#EditdateOfBirth.form-control(type='text', placeholder='date of birth')
+        .form-group
+          label(for='Editaddress') Address: 
+          input#Editaddress.form-control(type='text', placeholder='Address')
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+        button.btn.btn-primary(type='button') Update Member
+// End Of Update Modal
+// Modal Delete
+#deleteModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteModal', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#deleteModal.modal-title Delete
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+        button.btn.btn-danger(type='button') Delete User
+// Akhir Modal Delete
+// Awal Modal Delete By
+#deleteModalBy.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteModal By', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#deleteModalBy.modal-title Delete By
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+        .form-group
+          label(for='deleteBy') Delete By :
+          select#deleteBy.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteBy', aria-controls='dataTable')
+            option(value='class') Class
+            option(value='rows') Delete by selected row
+        .form-group
+          label(for='deleteByClass') Class :
+          select#deleteByClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='deleteByClass', aria-controls='dataTable')
+            option(value='12 Rpl 1') 12 Rpl 1
+            option(value='12 Rpl 2') 12 Rpl 2
+            option(value='12 Rpl 3') 12 Rpl 3
+        .form-group
+          .alert.alert-danger(role='alert')
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+        button.btn.btn-danger(type='button') Delete User
+// Modal Modify Class
+#modifyClassModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='modify', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5.modal-title Modify Class
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+        .form-group.modifyAction
+          label(for='deleteByClass', title="Action to be taken against the class") Action :
+          select#modifyAction.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='Modify Action', aria-controls='Modify Action', title="Action to be taken against the class")
+            option(value='Add') Add
+            option(value='Delete') Delete
+            option(value='Update') update
+        .form-group.d-none.modifyClass.modify
+          label(for='deleteByClass') Class :
+          select#deleteByClass.custom-select.custom-select-sm.form-control.form-control-sm.mb-2(name='Modify Class', aria-controls='Modify Class')
+            option(value='12 Rpl 1') 12 Rpl 1
+            option(value='12 Rpl 2') 12 Rpl 2
+            option(value='12 Rpl 3') 12 Rpl 3
+        .form-group.modifyAddClass.modify
+          label(for="modifyAddClass") Add Class :
+          input#modifyAddClass.form-control(placeholder="e.g 12 Rpl 1")
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+        button.btn.btn-primary(type='button') Add Class        
+// Modal Multiguna
+#multiguna.modal.fade(tabindex='-1', role='dialog', aria-labelledby='alert', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#multiguna.modal-title Attention
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body Please select a row first 
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+// Script Dasar
 script(src='/assets/vendor/jquery/jquery.min.js')
 script(src='/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')
-// Core plugin JavaScript
 script(src='/assets/vendor/jquery-easing/jquery.easing.min.js')
-// Custom scripts for all pages
 script(src='/assets/js/sb-admin-2.min.js')
+//Custom
+for sc in component.script
+  script(src=sc)
+script.
+  const testVariabelActive = document.getElementById('accordionSidebar');
+  const testLi = testVariabelActive.getElementsByTagName('li');
+  for(let e of testLi) {
+    let navActive = testVariabelActive.getAttribute('navBarActive');
+    if(navActive == e.getAttribute('name')) e.classList.add('active');
+  }

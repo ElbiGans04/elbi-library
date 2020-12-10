@@ -1,10 +1,21 @@
-"use strict";
+'use strict'
 
+// Datatable setup
+console.log($('#dataTable'))
+var t = $('#dataTable').DataTable( {
+  "columnDefs": [ {
+      "searchable": false,
+      "orderable": false,
+      "targets": 0
+  } ],
+  "order": [[ 2, 'asc' ]]
+} );
 
-
-
-// Perubahan Terakhir terjadi pada 17/11/2020
-
+t.on( 'order.dt search.dt', function () {
+  t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+      cell.innerHTML = i+1;
+  } );
+} ).draw();
 
 
 // Event Untuk Tombol Action Edit
