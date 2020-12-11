@@ -1,4 +1,4 @@
-let path = require('path');
+const renderWeb = require("../middleware/renderWeb");
 module.exports = function(req, res) {
-    res.render('book')
+    res.render('index', {title: 'Elbi Library | Book', active: 'book' ,component: renderWeb('book')})
 }

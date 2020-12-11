@@ -1,7 +1,6 @@
 'use strict'
 
 // Datatable setup
-console.log($('#dataTable'))
 var t = $('#dataTable').DataTable( {
   "columnDefs": [ {
       "searchable": false,
@@ -116,7 +115,7 @@ $('#deleteByClass').on('change', function(e){
 $('#deleteModalBy .modal-footer button:first-child, #deleteModalBy .modal-header button').on('click' , function(e){
   disabledOrNo(false)
   $('table#dataTable > tbody > tr.active').removeClass('active');
-  $("#rowSelect").html(``);
+  $("#rowSelect").css('opacity', '0');
 });
 
 
@@ -143,7 +142,7 @@ $('#modifyAction').on('change', function(event){
   }
   
   // Jika nilainya update
-  if(value === 'U-pdate') {
+  if(value === 'Update') {
     $(modalBody).children('.modifyAddClass').removeClass('d-none');
     $(modalBody).children('.modifyClass').removeClass('d-none');
     $(modalBody).children('.modifyAddClass').children('label').html('Update Class :');
