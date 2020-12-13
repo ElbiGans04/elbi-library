@@ -2,10 +2,10 @@ const dotenv = require("dotenv").config({
   path: __dirname + "/../config/.env",
 });
 const port = process.env.APP_PORT;
-const member = require("../middleware/member");
-const index = require("../middleware/index");
-const book = require("../middleware/book");
-const data = require("../middleware/data");
+const member = require("../middleware/MIDmember");
+const index = require("../middleware/MIDindex");
+const book = require("../middleware/MIDbook");
+const data = require("../middleware/MIDdata");
 
 
 module.exports = function (app) {

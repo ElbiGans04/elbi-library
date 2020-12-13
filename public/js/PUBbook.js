@@ -1,7 +1,7 @@
 function format ( d ) {
-    return 'Full name: '+d.first_name+' '+d.last_name+'<br>'+
-        'Salary: '+d.salary+'<br>'+
-        'The child row can contain any data you wish, including links, images, inner tables etc.';
+    return  `Pengarang: ${d.book_tebalHalaman} <br>`+
+        `Isbn: ${d.book_isbn} <br>`+
+        `Penerbit : ${d.book_penerbit}`;
 }
  
 $(document).ready(function() {
@@ -11,9 +11,6 @@ $(document).ready(function() {
         "ajax": {
             "url" : "/data",
             "method": "post",
-            "xhrFields": {
-                withCredentials: true
-            }
         },
         "columns": [ 
             {
@@ -22,10 +19,14 @@ $(document).ready(function() {
                 "data":           null,
                 "defaultContent": ""
             },
-            { "data": "first_name" },
-            { "data": "position" },
-            { "data": "office" },
-            { "data": "salary" }
+            { "data": "book_image.type" },
+            { "data": "book_judul" },
+            { "data": "book_peluncuran" },
+            { "data": "book_pengarang" },
+            // { "data": "book_penerbit" },
+            // { "data": "book_tebalHalaman" },
+            // { "data": "book_isbn" },
+            { "data":  null}
         ],
         "order": [[1, 'asc']]
     } )
@@ -63,3 +64,31 @@ $(document).ready(function() {
         } );
     } );
 } );
+
+// $(document).ready(function() {
+//     console.log($('#example'))
+//         var dt = $('#example').DataTable( {
+//             "processing": true,
+//             "ajax": {
+//                 "url" : "/data",
+//                 "method": "post",
+//             },
+//             "columns": [ 
+//                 {
+//                     "class":          "details-control",
+//                     "orderable":      false,
+//                     "data":           null,
+//                     "defaultContent": ""
+//                 },
+//                 { "data": "book_image.type" },
+//                 { "data": "book_judul" },
+//                 { "data": "book_peluncuran" },
+//                 { "data": "book_pengarang" },
+//                 { "data": "book_penerbit" },
+//                 { "data": "book_tebalHalaman" },
+//                 { "data": "book_isbn" },
+//                 { "data":  null}
+//             ],
+//             "order": [[1, 'asc']]
+//         }) 
+// })

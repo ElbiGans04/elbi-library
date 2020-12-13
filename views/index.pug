@@ -9,7 +9,7 @@ head
   link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i', rel='stylesheet')
   link(href='/assets/css/sb-admin-2.min.css', rel='stylesheet')
   link(href='/assets/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
-  for cs in component.css
+  for cs in css
     link(href=cs rel='stylesheet')
 // Page Wrapper
 #wrapper
@@ -178,7 +178,7 @@ head
                 |                     Logout
       // End of Topbar
       // Begin Page Content
-      .container-fluid !{component.body}
+      .container-fluid !{body}
 
         
       // /.container-fluid
@@ -350,7 +350,7 @@ script(src='/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')
 script(src='/assets/vendor/jquery-easing/jquery.easing.min.js')
 script(src='/assets/js/sb-admin-2.min.js')
 //Custom
-for sc in component.script
+for sc in js
   script(src=sc)
 script.
   const testVariabelActive = document.getElementById('accordionSidebar');

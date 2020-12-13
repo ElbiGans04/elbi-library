@@ -4,11 +4,12 @@
   let path = require("path");
   const router = require("./router/router");
   let db = require("./model/modelIndex");
-  let { tabelBook, tabelUser } = await db();
+  let { sequelize, tabelBook, tabelUser } = db();
 
-  // Hapus semua tabel
-  // Demo Untuk Tabel User
-  // Isi Data demo
+  // Perbaharui semua tabel (Menghapus semua tabel)
+  await sequelize.sync({force: true})
+
+  // Demo Untuk Tabel User isi Data demo untuk sementara saat pengembangan
   let demo = [
     {
       member_number: "71023",
@@ -33,7 +34,9 @@
     },
   ];
   await tabelUser.bulkCreate(demo);
-  await tabelBook.create({book_judul: 'Grow With Character', book_peluncuran: '29112013', book_pengarang: 'Hermawan Kartajaya', book_penerbit: 'PT. Gramedia Pustaka Utama', book_tebalHalaman: `488`, book_isbn: '9789792257359'})
+  await tabelBook.create({book_image: '122333' ,book_judul: 'Grow With Character', book_peluncuran: '29112013', book_pengarang: 'Hermawan Kartajaya', book_penerbit: 'PT. Gramedia Pustaka Utama', book_tebalHalaman: `488`, book_isbn: '9789792257359'});
+
+
 
   app.set("views", path.join(__dirname, "./views"));
   app.set("view engine", "pug");
