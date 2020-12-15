@@ -3,16 +3,17 @@ const dotenv = require("dotenv").config({
 });
 const port = process.env.APP_PORT;
 const member = require("../middleware/MIDmember");
-const index = require("../middleware/MIDindex");
 const book = require("../middleware/MIDbook");
-const data = require("../middleware/MIDdata");
-
+const bookData = require("../middleware/MIDdataBOOK");
+const memberData = require('../middleware/MIDdataMEMBER');
 
 module.exports = function (app) {
-  app.get("/", index);
+  // app.get("/", index);
   app.get("/member", member);
+  app.post("/member", memberData);
+  
   app.get("/book", book);
-  app.post("/data", data);
+  app.post("/book", bookData);
 
 
   app.listen(port, (err) => {

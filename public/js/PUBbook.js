@@ -1,7 +1,7 @@
 function format ( d ) {
-    return  `Pengarang: ${d.book_tebalHalaman} <br>`+
+    return  `Pengarang: ${d.book_page_thickness} <br>`+
         `Isbn: ${d.book_isbn} <br>`+
-        `Penerbit : ${d.book_penerbit}`;
+        `Penerbit : ${d.book_publisher}`;
 }
  
 $(document).ready(function() {
@@ -9,7 +9,7 @@ $(document).ready(function() {
         "processing": true,
         // "serverSide": true,
         "ajax": {
-            "url" : "/data",
+            "url" : "/book",
             "method": "post",
         },
         "columns": [ 
@@ -20,13 +20,13 @@ $(document).ready(function() {
                 "defaultContent": ""
             },
             { "data": "book_image.type" },
-            { "data": "book_judul" },
-            { "data": "book_peluncuran" },
-            { "data": "book_pengarang" },
+            { "data": "book_title" },
+            { "data": "book_launching" },
+            { "data": "book_author" },
+            { "data":  null}
             // { "data": "book_penerbit" },
             // { "data": "book_tebalHalaman" },
             // { "data": "book_isbn" },
-            { "data":  null}
         ],
         "order": [[1, 'asc']]
     } )

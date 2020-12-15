@@ -15,26 +15,26 @@
       member_number: "71023",
       member_name: "Adam McKenzie",
       member_class: "12 Rpl 1",
-      member_dateOfBirth: "74255",
+      member_date_of_birth: "74255",
       member_adress: "000 Kling Station",
     },
     {
       member_number: "97995",
       member_name: "Rashad Mraz",
       member_class: "12 Rpl 2",
-      member_dateOfBirth: "86146",
+      member_date_of_birth: "86146",
       member_adress: "403 Dora Haven",
     },
     {
       member_number: "174267",
       member_name: "Coty Schultz",
       member_class: "12 Rpl 3",
-      member_dateOfBirth: "50009",
+      member_date_of_birth: "50009",
       member_adress: "Greenholt Ranch",
     },
   ];
   await tabelUser.bulkCreate(demo);
-  await tabelBook.create({book_image: '122333' ,book_judul: 'Grow With Character', book_peluncuran: '29112013', book_pengarang: 'Hermawan Kartajaya', book_penerbit: 'PT. Gramedia Pustaka Utama', book_tebalHalaman: `488`, book_isbn: '9789792257359'});
+  await tabelBook.create({book_image: '122333' ,book_title: 'Grow With Character', book_launching: '29112013', book_author: 'Hermawan Kartajaya', book_publisher: 'PT. Gramedia Pustaka Utama', book_page_thickness: `488`, book_isbn: '9789792257359'});
 
 
 

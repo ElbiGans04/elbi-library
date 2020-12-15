@@ -1,9 +1,14 @@
-module.exports = function (user, without, additional) {
+module.exports = function (data) {
+  let {without, coloumn, additional, mix} = data;
+  // let mix = data.mix.yes;
+  let dataMix = data.mix.data;
+
+  // Kumpulan Fungsi
   function generateNameColoumns(result, coloumn, without, additional) {
     let i = 0;
 
     // Buat Perulangan Untuk additional tetapi sebelum itu buat kondisi dulu
-    looping(0, result, additional);
+    looping(0, result, additional, null);
 
     // Buat Perulangan pada coloum inti
     for (let e in coloumn) {
@@ -36,7 +41,7 @@ module.exports = function (user, without, additional) {
       i++;
     }
     // Perulangan dari belakang
-    looping(1, result, additional);
+    looping(1, result, additional, null);
 
     // Return
     return result;
@@ -49,8 +54,7 @@ module.exports = function (user, without, additional) {
     for (let a of dont) {
       // Jika Value sama dengan element didalam dont maka return false
       if (a === value) return false;
-      // return true saat 'i' == dont length. Mengapa saya tidak mengecheck nilai yang sama lagi ? Kerena
-      // telah dicheck oleh 'if'  diatas
+      // return true saat 'i' == dont length. Mengapa saya tidak mengecheck nilai yang sama lagi ? Kerena telah dicheck oleh 'if'  diatas
       if (i === dont.length - 1) return true;
       i++;
     }
@@ -59,6 +63,7 @@ module.exports = function (user, without, additional) {
   // Pisahkan kalimat
   function potongKata(word) {
     // Pisahkan kalimat
+    console.log(word)
     let hasilPotongan = word.split("_");
     let result = "";
     let i = 0;
@@ -91,17 +96,22 @@ module.exports = function (user, without, additional) {
   }
 
   // lopping untuk colloum additional
-  function looping(i, result, additional) {
+  function looping(index, result, additional , push) {
     // Buat Perulangan Untuk additional tetapi sebelum itu buat kondisi dulu
-    if (additional[i].length >= 1) {
-      additional[i].forEach(function (e) {
-        // Jika nilainya null
-        if (e == null) result.push("");
-        // Jika Nilainya selain dari null
-        if (e != null) result.push(ubahHurufPertama(e));
+    if (additional[index].length >= 1) {
+      additional[index].forEach(function (e, i) {
+        // Check Jika nilainya null maka ubah menjadi string kosong
+        e = e === null ? '' : e;
+        // Jika push ada nilainya
+        let word = push == null ? `${ubahHurufPertama(e)}` : `<${push}>${ubahHurufPertama(e)}</${push}>`;
+        // Jika result == string
+        if(typeof result == 'string') result += word
+        else result.push(word);
       });
     }
+    return result
   }
+
 
   function bodyHtml(type, coloumn) {
     if (type == "table") {
@@ -145,8 +155,11 @@ module.exports = function (user, without, additional) {
           body += `</tr></thead><tfoot><tr>`;
           coloumn.forEach(function (element, index) {
             body += `<th>${element}</th>`;
+            // Saat sudah berakhir // saat index terakhir
             if (index == coloumn.length - 1) {
-              body += "</tr></tfoot><tbody></tbody></table></div></div></div>";
+              body += "</tr></tfoot><tbody>";
+              if(data.mix.yes == true) body += tbody(dataMix, without, additional);
+              body += "</tbody></table></div></div></div>";
             }
           });
         }
@@ -156,8 +169,28 @@ module.exports = function (user, without, additional) {
     }
   }
 
+  // Untuk meng-generate / menghasil kan tbody
+  function tbody (data, without, additional) {
+    let result = ``;
+    for(let e in data) {
+      let i = 0;
+      result += looping(0, '<tr>', additional, 'td');
+      for(let f in data[e].dataValues) {
+          if(gaTermasuk(without, i) === true) result += `<td>${potongKata(data[e].dataValues[f])}</td>`;
+          i++
+      }
+        // Buat Additional
+      result += looping(1, '', additional, 'td');
+      result += `</tr>`;
+        
+    }  
+      // Return
+      return result
+  };
+
+
   // Return
   // Main
-  let result = generateNameColoumns([], user, without, additional);
+  let result = generateNameColoumns([], coloumn, without, additional);
   return bodyHtml("table", result);
 };

@@ -6,11 +6,11 @@ module.exports = function(sequelize, Datatype) {
             primaryKey: true
         },
         book_image: Datatype.BLOB('long'),
-        book_judul : Datatype.STRING,
-        book_peluncuran: Datatype.STRING,
-        book_pengarang: Datatype.STRING,
-        book_penerbit: Datatype.STRING,
-        book_tebalHalaman: Datatype.STRING,
+        book_title : Datatype.STRING,
+        book_launching: Datatype.STRING,
+        book_author: Datatype.STRING,
+        book_publisher: Datatype.STRING,
+        book_page_thickness: Datatype.STRING,
         book_isbn: Datatype.STRING,
     });
 
