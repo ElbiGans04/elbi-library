@@ -1,6 +1,8 @@
+const { text } = require("express");
+
 module.exports = function (data) {
-  let {without, coloumn, additional, mix} = data;
-  // let mix = data.mix.yes;
+  let {without, coloumn, additional} = data;
+  let mix = data.mix.yes;
   let dataMix = data.mix.data;
 
   // Kumpulan Fungsi
@@ -63,7 +65,6 @@ module.exports = function (data) {
   // Pisahkan kalimat
   function potongKata(word) {
     // Pisahkan kalimat
-    console.log(word)
     let hasilPotongan = word.split("_");
     let result = "";
     let i = 0;
@@ -115,6 +116,7 @@ module.exports = function (data) {
 
   function bodyHtml(type, coloumn) {
     if (type == "table") {
+      let test = ``;
       let body = `
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">List of library books</h1>
@@ -149,22 +151,15 @@ module.exports = function (data) {
                     <tr>`;
       coloumn.forEach(function (e, i) {
         body += `<th>${e}</th>`;
+        test += `<th>${e}</th>`
 
-        // Jika terakhir
+        // Jika sudah forEach semua coloumn
         if (i == coloumn.length - 1) {
-          body += `</tr></thead><tfoot><tr>`;
-          coloumn.forEach(function (element, index) {
-            body += `<th>${element}</th>`;
-            // Saat sudah berakhir // saat index terakhir
-            if (index == coloumn.length - 1) {
-              body += "</tr></tfoot><tbody>";
-              if(data.mix.yes == true) body += tbody(dataMix, without, additional);
-              body += "</tbody></table></div></div></div>";
-            }
-          });
+          body += `</tr></thead><tfoot><tr>${test}</tr></tfoot><tbody>`;
+          if(mix) body += `${tbody(dataMix, without, additional)}`;
+          body += `</tbody></table></div></div></div>`
         }
       });
-
       return body;
     }
   }
