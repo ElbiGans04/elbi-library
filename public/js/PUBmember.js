@@ -16,7 +16,7 @@ t.on( 'order.dt search.dt', function () {
   } );
 } ).draw();
 
-
+console.log("Test")
 // Event Untuk Tombol Action Edit
 $(document).on("click", "button.edit", function (e) {
   $("#editModal").modal("toggle");

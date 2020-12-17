@@ -35,6 +35,7 @@
   ];
   await tabelUser.bulkCreate(demo);
   await tabelBook.create({book_image: '122333' ,book_title: 'Grow With Character', book_launching: '29112013', book_author: 'Hermawan Kartajaya', book_publisher: 'PT. Gramedia Pustaka Utama', book_page_thickness: `488`, book_isbn: '9789792257359'});
+  await tabelBook.create({book_image: '74000' ,book_title: 'Product Program Liaison', book_launching: '21041', book_author: 'Dr. Jalon Hoppe', book_publisher: 'PT. Gramedia Pustaka Utama', book_page_thickness: `488`, book_isbn: '9789792257359'});
 
 
 

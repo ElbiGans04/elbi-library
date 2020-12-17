@@ -10,10 +10,11 @@ const memberData = require('../middleware/MIDdataMEMBER');
 module.exports = function (app) {
   // app.get("/", index);
   app.get("/member", member);
-  app.post("/member", memberData);
+  // app.post("/member", memberData);
   
   app.get("/book", book);
-  app.post("/book", bookData);
+  // app.post("/book", bookData);
+
 
 
   app.listen(port, (err) => {

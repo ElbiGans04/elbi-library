@@ -349,52 +349,7 @@ script(src='/assets/vendor/jquery/jquery.min.js')
 script(src='/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')
 script(src='/assets/vendor/jquery-easing/jquery.easing.min.js')
 script(src='/assets/js/sb-admin-2.min.js')
+script(src='/assets/js/PUBglobal.js')
 //Custom
 for sc in js
   script(src=sc)
-script.
-  const testVariabelActive = document.getElementById('accordionSidebar');
-  const testLi = testVariabelActive.getElementsByTagName('li');
-  for(let e of testLi) {
-    let navActive = testVariabelActive.getAttribute('navBarActive');
-    if(navActive == e.getAttribute('name')) e.classList.add('active');
-  }
-script. 
-  let navLi = document.querySelectorAll("#accordionSidebar > li");
-  // Elementnya tidak ketemu kemungkinan karena elementnnya diolah oleh datatabel terlebih
-  // dahulu
-  //- $(document).ready(function(){
-  //-   let bodyTabel = document.querySelectorAll("#example > tbody > tr");
-  //-   bodyTabel.forEach(function(e,i){
-  //-     console.log(e)
-  //-   })
-  //- })
-
-  navLi.forEach(function(e){
-   e.addEventListener('click' , function(e){
-      e.preventDefault();
-      let aHref = this.children[0].getAttribute('href');
-      let test = fetch(aHref , {method: 'post'}).then(result => result.json()).then(result => {
-        let element = document.getElementById('content');
-        let element2 = element.getElementsByTagName('div');
-        let navLiActive = document.querySelectorAll('#accordionSidebar > li.active');
-
-        element2[42].innerHTML = result.html;
-        navLiActive.forEach(e => e.classList.remove('active'))
-        this.classList.add('active');
-
-        aHref2 = aHref.split('/');
-        let hurufPertama = aHref2[1].slice(0,1);
-        let hurufSelanjutnya = aHref2[1].slice(1);
-        hurufPertama = hurufPertama.toUpperCase();
-        hurufPertama += hurufSelanjutnya;
-        document.querySelector('title').innerHTML = `Elbi Library | ${hurufPertama}`
-
-        //- Ganti Url
-        let stateObj = { id: "100" }; 
-        window.history.replaceState(stateObj, 
-        "r", aHref); 
-      })
-    })
-  })
-  

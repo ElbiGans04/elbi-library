@@ -1,4 +1,5 @@
-table#dataTable > tbody > tr > td {
+/* Untuk Tabel */
+table#tabelUtama > tbody > tr > td {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
@@ -7,16 +8,18 @@ table#dataTable > tbody > tr > td {
     user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
   }
-  table#dataTable > tbody > tr > td:hover {
+  table#tabelUtama > tbody > tr > td:hover {
     cursor: pointer;
   }
-  table#dataTable > tbody > tr > td:last-child:hover {
+  table#tabelUtama > tbody > tr > td:last-child:hover {
     cursor: auto;
   }
-  table#dataTable > tbody > tr.active {
+  table#tabelUtama > tbody > tr.active {
     background-color: #ddd;
     opacity: 0.7;
   }
+
+
   .disableButton {
     margin-right: 0.25rem !important;
   }
@@ -26,17 +29,12 @@ table#dataTable > tbody > tr > td {
     margin-right: 0.5rem !important;
   }
   
-  #content
-    > div
-    > div.card.shadow.mb-4
-    > div.card-header.py-3.d-sm-flex.align-items-center.justify-content-between
-    > div
-    > select {
-    width: 40%;
-  }
-  
   #rowSelect {
     opacity: 0;
+  }
+
+  #inputClass {
+    max-width: 10%;
   }
   
   /* Responsive */
@@ -47,13 +45,15 @@ table#dataTable > tbody > tr > td {
       line-height: 1.5 !important;
       border-radius: 0.2rem !important;
     }
-  
+    
+    /* Untuk div menu asli */
     #content
       > div
       > div.d-sm-flex.align-items-center.justify-content-between.mb-4 {
       flex-wrap: wrap;
     }
-  
+    
+    /* Button action */
     #content
       > div
       > div.d-sm-flex.align-items-center.justify-content-between.mb-4
@@ -63,22 +63,13 @@ table#dataTable > tbody > tr > td {
   }
   
   @media screen and (max-width: 651px) {
-    #content
-      > div
-      > div.card.shadow.mb-4
-      > div.card-header.py-3.d-sm-flex.align-items-center.justify-content-between
-      > h6:nth-child(1) {
-      display: none;
-    }
+    /* Button Action */
     #content
       > div
       > div.d-sm-flex.align-items-center.justify-content-between.mb-4
       .actionMenu {
       margin: 1rem 0;
     }
-  
-    #dataTable_wrapper > div:nth-child(1) {
-      justify-content: flex-start !important;
-    }
+
   }
   

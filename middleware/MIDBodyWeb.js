@@ -1,7 +1,8 @@
-const { text } = require("express");
-
 module.exports = function (data) {
-  let {without, coloumn, additional} = data;
+  let {without, coloumn, additional, elementName} = data;
+  let {heading, buttonName1, buttonName2, buttonName3} = elementName;
+
+
   let mix = data.mix.yes;
   let dataMix = data.mix.data;
 
@@ -119,34 +120,32 @@ module.exports = function (data) {
       let test = ``;
       let body = `
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <h1 class="h3 mb-0 text-gray-800">List of library books</h1>
+              <h1 class="h3 mb-0 text-gray-800">${heading}</h1>
               <div class="actionMenu">
                 <!-- Class-->
-                <button class="btn btn-primary disableButton" id="modifyClass" type="button" data-toggle="modal" data-target="#modifyClassModal" title="Modify library members" aria-describe="Modify library members"><span class="icon text-white-50"><i class="fas fa-clipboard"></i></span><span class="text">Category</span></button>
+                <button class="btn btn-primary disableButton" id="modifyClass" type="button" data-toggle="modal" data-target="#modifyClassModal" title="Modify library members" aria-describe="Modify library members"><span class="icon text-white-50"><i class="${buttonName1.icon}"></i></span><span class="text">${buttonName1.name}</span></button>
                 <!-- Add Member-->
-                <button class="btn btn-primary disableButton" type="button" data-toggle="modal" data-target="#addMember" title="Add library members" aria-describe="Add library members"><span class="icon text-white-50"><i class="fas fa-book"></i></span><span class="text">Add Book</span></button>
+                <button class="btn btn-primary disableButton" type="button" data-toggle="modal" data-target="#addMember" title="Add library members" aria-describe="Add library members"><span class="icon text-white-50"><i class="${buttonName2.icon}"></i></span><span class="text">${buttonName2.name}</span></button>
                 <!-- End add member-->
                 <!-- Remove All-->
-                <button class="btn btn-danger" id="deleteModalByButton" type="button" data-toggle="modal" data-target="#removeMember" title="Remove class-based members or based on selected rows" aria-describe="Remove class-based members or based on selected rows"><span class="icon text-white-50"><i class="fas fa-trash"></i></span><span class="text">Delete by</span></button>
+                <button class="btn btn-danger" id="deleteModalByButton" type="button" data-toggle="modal" data-target="#removeMember" title="Remove class-based members or based on selected rows" aria-describe="Remove class-based members or based on selected rows"><span class="icon text-white-50"><i class="${buttonName3.icon}"></i></span><span class="text">${buttonName3.name}</span></button>
                 <!-- End of remove all-->
               </div>
             </div>
             <div class="card shadow mb-4">
               <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">List Book</h6>
-                <div class="sorting d-flex justify-content-center align-items-center">
-                  <h6 class="font-weight-bold text-primary mb-0" id="rowSelect">1 rows selected</h6>
-                  <select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputClass" name="deleteByClass" aria-controls="dataTable">
-                    <option value="all">All</option>
-                    <option value="12 Rpl 1">12 Rpl 1</option>
-                    <option value="12 Rpl 2">12 Rpl 2</option>
-                    <option value="12 Rpl 3">12 Rpl 3         </option>
-                  </select>
-                </div>
+              <h6 class="font-weight-bold text-primary mb-0" id="rowSelect">1 rows selected</h6>
+              <select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputClass" name="deleteByClass" aria-controls="dataTable">
+                <option value="all">All</option>
+                <option value="12 Rpl 1">12 Rpl 1</option>
+                <option value="12 Rpl 2">12 Rpl 2</option>
+                <option value="12 Rpl 3">12 Rpl 3         </option>
+              </select>
+                
               </div>
               <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-bordered display" id="example" width="100%" cellspacing="0">
+                <table class="table table-bordered display" id="tabelUtama" width="100%" cellspacing="0">
                   <thead>
                     <tr>`;
       coloumn.forEach(function (e, i) {
