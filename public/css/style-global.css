@@ -1,75 +1,81 @@
 /* Untuk Tabel */
 table#tabelUtama > tbody > tr > td {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
-  }
-  table#tabelUtama > tbody > tr > td:hover {
-    cursor: pointer;
-  }
-  table#tabelUtama > tbody > tr > td:last-child:hover {
-    cursor: auto;
-  }
-  table#tabelUtama > tbody > tr.active {
-    background-color: #ddd;
-    opacity: 0.7;
+}
+table#tabelUtama > tbody > tr > td:hover {
+  cursor: pointer;
+}
+table#tabelUtama > tbody > tr > td:last-child:hover {
+  cursor: auto;
+}
+table#tabelUtama > tbody > tr.active {
+  background-color: #ddd;
+  opacity: 0.7;
+}
+
+.disableButton {
+  margin-right: 0.25rem !important;
+}
+
+.disableButton span:first-child,
+#deleteModalByButton span:first-child {
+  margin-right: 0.5rem !important;
+}
+
+#rowSelect {
+  opacity: 0;
+}
+
+#inputShowClass {
+  max-width: 10%;
+}
+
+/* Responsive */
+@media screen and (max-width: 991px) {
+  .actionMenu button {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    border-radius: 0.2rem !important;
   }
 
-
-  .disableButton {
-    margin-right: 0.25rem !important;
-  }
-  
-  .disableButton span:first-child,
-  #deleteModalByButton span:first-child {
-    margin-right: 0.5rem !important;
-  }
-  
-  #rowSelect {
-    opacity: 0;
+  /* Untuk div menu asli */
+  #content
+    > div
+    > div.d-sm-flex.align-items-center.justify-content-between.mb-4 {
+    flex-wrap: wrap;
   }
 
-  #inputClass {
-    max-width: 10%;
+  /* Button action */
+  #content
+    > div
+    > div.d-sm-flex.align-items-center.justify-content-between.mb-4
+    .actionMenu {
+    margin: 1rem;
   }
-  
-  /* Responsive */
-  @media screen and (max-width: 991px) {
-    .actionMenu button {
-      padding: 0.25rem 0.5rem !important;
-      font-size: 0.875rem !important;
-      line-height: 1.5 !important;
-      border-radius: 0.2rem !important;
-    }
-    
-    /* Untuk div menu asli */
-    #content
-      > div
-      > div.d-sm-flex.align-items-center.justify-content-between.mb-4 {
-      flex-wrap: wrap;
-    }
-    
-    /* Button action */
-    #content
-      > div
-      > div.d-sm-flex.align-items-center.justify-content-between.mb-4
-      .actionMenu {
-      margin: 1rem;
-    }
-  }
-  
-  @media screen and (max-width: 651px) {
-    /* Button Action */
-    #content
-      > div
-      > div.d-sm-flex.align-items-center.justify-content-between.mb-4
-      .actionMenu {
-      margin: 1rem 0;
-    }
+}
 
+@media screen and (max-width: 651px) {
+  /* Button Action */
+  #content
+    > div
+    > div.d-sm-flex.align-items-center.justify-content-between.mb-4
+    .actionMenu {
+    margin: 1rem 0;
   }
-  
+}
+
+/* Icon Tombol */
+td.details-control {
+  background: url("../img/details_open.png") no-repeat center center;
+  cursor: pointer;
+}
+tr.details td.details-control {
+  background: url("../img/details_close.png") no-repeat center center;
+}

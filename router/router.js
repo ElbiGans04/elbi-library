@@ -4,8 +4,7 @@ const dotenv = require("dotenv").config({
 const port = process.env.APP_PORT;
 const member = require("../middleware/MIDmember");
 const book = require("../middleware/MIDbook");
-const bookData = require("../middleware/MIDdataBOOK");
-const memberData = require('../middleware/MIDdataMEMBER');
+
 
 module.exports = function (app) {
   // app.get("/", index);
