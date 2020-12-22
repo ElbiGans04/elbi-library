@@ -5,12 +5,12 @@ const url = require("url");
 module.exports = async function (req, res) {
   try {
     let test = url.parse(req.url, true).query;
-    let { tabelUser, tabelCategory } = await db();
+    let { tabelUser, tabelClass } = await db();
     let result = { data: await tabelUser.findAll({}) };
 
     // Argument Untuk Render web
     let arg = {
-      type: "member",
+      category: await tabelCategory.findAll({}),
       without: [0, 6, 7],
       coloumn: await tabelUser.rawAttributes,
       additional: [[null], ["Action"]],

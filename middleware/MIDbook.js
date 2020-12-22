@@ -5,12 +5,12 @@ const url = require("url");
 module.exports = async function (req, res) {
   try {
     let test = url.parse(req.url, true).query;
-    let { tabelBook, tabelCategory } = await db();
+    let { tabelBook, tabelClass } = await db();
     let result = { data: await tabelBook.findAll({})};
 
     // Argument Untuk Membuat body
     let arg = {
-      type: 'book',
+      category: await tabelCategory.findAll({}),
       without: [0, 1, 5, 6, 7, 8, 9],
       coloumn: await tabelBook.rawAttributes,
       additional: [[null], ["Action"]],

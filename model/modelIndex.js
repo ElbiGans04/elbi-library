@@ -12,10 +12,10 @@ module.exports = function() {
     // Setup tabel user dan tabel book
     let tabelUser = require('./modelUser')(sequelize, DataTypes);
     let tabelBook = require('./modelBook')(sequelize, DataTypes);
-    let tabelCategory = require('./modelCategory')(sequelize, DataTypes);
+    let tabelClass = require('./modelClass')(sequelize, DataTypes);
 
 
 
-    return {sequelize, tabelUser, tabelBook, tabelCategory}
+    return {sequelize, tabelUser, tabelBook, tabelClass}
 
 }

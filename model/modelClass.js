@@ -1,12 +1,11 @@
 module.exports = function(sequelize, Datatype) {
-    let member = sequelize.define('category', {
+    let member = sequelize.define('class', {
         id: {
             type: Datatype.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
-        for: Datatype.STRING,
-        category: Datatype.STRING
+        class: Datatype.STRING
     }, {
         timestamps: false
     });

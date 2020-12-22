@@ -7,10 +7,9 @@ document.onreadystatechange = () => {
       let navActive = testVariabelActive.getAttribute("navBarActive");
       if (navActive == e.getAttribute("name")) {
         e.classList.add("active");
-        testVariabelActive.removeAttribute('navBarActive')
+        testVariabelActive.removeAttribute("navBarActive");
       }
     }
-
 
     function tabel(dataTabel) {
       let navActiveName = $("#accordionSidebar > li.active").attr("name");
@@ -22,7 +21,7 @@ document.onreadystatechange = () => {
               searchable: false,
               orderable: false,
               targets: [0, 6],
-            }
+            },
           ],
           order: [[2, "asc"]],
         });
@@ -37,9 +36,9 @@ document.onreadystatechange = () => {
       } else if (navActiveName == "book") {
         function format(d) {
           return (
-            `Page Thickness: ${d.book_page_thickness} <br>` +
-            `Isbn: ${d.book_isbn} <br>` +
-            `Publisher : ${d.book_publisher}`
+            `Page Thickness: ${d.thickness} <br>` +
+            `Isbn: ${d.isbn} <br>` +
+            `Publisher : ${d.publisher}`
           );
         }
 
@@ -48,15 +47,15 @@ document.onreadystatechange = () => {
             {
               searchable: false,
               orderable: false,
-              targets: [0],
+              targets: 0,
               class: "details-control",
               defaultContent: "",
             },
             {
               searchable: false,
               orderable: false,
-              target: 4
-            }
+              target: 4,
+            },
           ],
           order: [[1, "asc"]],
         });
@@ -80,7 +79,9 @@ document.onreadystatechange = () => {
               detailRows.splice(idx, 1);
             } else {
               tr.addClass("details");
-              row.child(format(dataTabel.data[row[0][0]])).show();
+              // let attr = ambilAttribute(row[0][0]);
+              // console.log(attr[row[0][0]])
+              row.child(format(ambilAttribute(row[0][0]))).show();
 
               // Add to the 'open' array
               if (idx === -1) {
@@ -99,12 +100,32 @@ document.onreadystatechange = () => {
       }
     }
 
+    function ambilAttribute(i) {
+      let test = {};
+      let tr = document.querySelectorAll("#tabelUtama > tbody tr[role=row]");
+      for (let j = 0; j < tr[i].attributes.length - 4; j++) {
+        let name = tr[i].attributes[j].nodeName.split("-")[1];
+        test[name] = tr[i].attributes[j].nodeValue;
+      }
+
+      return test;
+    }
+
+    function gaTermasuk(dont, value) {
+      let i = 0;
+      if (dont.length > 0) {
+        for (let a of dont) {
+          // Jika Value sama dengan element didalam dont maka return false
+          if (a === value) return false;
+          // return true saat 'i' == dont length. Mengapa saya tidak mengecheck nilai yang sama lagi ? Kerena telah dicheck oleh 'if'  diatas
+          if (i === dont.length - 1) return true;
+          i++;
+        }
+      } else return true;
+    }
+
     // // Jalankan
-    // let liActive = document.querySelector("#accordionSidebar > li.active");
-    // let aHref = `${liActive.getAttribute("name")}?as=dataonly`;
-    // fetch(aHref)
-    //   .then((result) => result.json())
-    //   .then((result) => tabel(result));
+    tabel();
 
     // Event Ajax Saat klik navbar
     let navLi = document.querySelectorAll("#accordionSidebar > li");
@@ -156,72 +177,130 @@ document.onreadystatechange = () => {
     // Event Klik Untuk Tombol Action Edit
     $(document).on("click", "button.edit", function (e) {
       $("#modalMultiGuna").modal("toggle");
-      let test = $(this).parent().prevAll();
-      let [adress, date, className, fullname] = test;
-      console.log(test)
 
-      modalGenerate('Update', [
-        { name: 'Title', type: 'input'},
-        {name: 'category', type: 'select' , val : ['12 Rpl 1', '12 Rpl 2', '12 Rpl 3']}
-      ], [{
-        class: 'btn-primary',
-        name: 'update'
-      }])
-      // $('#multigunaHeader').html('Update')
-      // $("#EditInputFullname").val($(fullname).text());
-      // $("#EditClass").val($(className).text());
-      // $("#EditdateOfBirth").val($(date).text());
-      // $("#Editaddress").val($(adress).text());
+
+      // Ambil Option
+      const option = document.querySelectorAll("#inputShowClass > option");
+      const arVal = [];
+      option.forEach(function (e, i) {
+        if (i !== 0) arVal.push(e.textContent);
+      });
+
+
+      // Dapatkan Index Li
+      let li = document.querySelectorAll('#tabelUtama > tbody > tr');
+      let li2 = this.parentElement.parentElement;
+      let hasilIndex;
+      li.forEach(function(e, i) {
+        if(e == li2) hasilIndex = i
+      })
+
+      // Ambil Attribute bedasarkan coloumn yang diklik
+      let obj = ambilAttribute(hasilIndex)
+
+      let test = $(this).parent().prevAll();
+      const thead = document.querySelector('#tabelUtama > thead');
+      const tHeadChild = Array.from(thead.children[0].children);
+
+      $.each(tHeadChild, function(i,e){
+        let index = $(e).nextAll().length - 1;
+        if(i !== 0 && (tHeadChild.length - 1) !== i) obj[e.textContent] = test[index].textContent
+      });
+
+      let result = [];
+      const keyObj = Object.keys(obj);
+      const valObj = Object.values(obj)
+      keyObj.forEach(function(e,i){
+        if(i !== 0 ) {
+          let rst = {};
+          rst.name = e;
+          let type = e.toLocaleLowerCase() == 'class' ? "select" : "input";
+          type == "select" ? rst.val = arVal : rst;
+          rst.value = valObj[i]
+          rst.type = type;
+          result.push(rst)
+        }
+      });
+
+
+      modalGenerate(
+        "Update",
+        result,
+        [
+          {
+            class: "btn-primary",
+            name: "update",
+          },
+        ]
+      );
+
+      let inChild = Array.from(li[hasilIndex].children);
+      inChild.forEach(function(e,i){
+        if(e.matches('.tableClass')) document.getElementById('inputClass').value = e.textContent
+      })
+
+      
+      
     });
 
-    function modalGenerate(headerName, bodyComponent, footerComponent){
+    function modalGenerate(headerName, bodyComponent, footerComponent) {
       const header = document.getElementById(`multigunaHeader`);
-      const body = document.querySelector('#modalMultiGuna > div > div > div.modal-body');
-      const footer = document.querySelector('#modalMultiGuna > div > div > div.modal-footer');
-      
-
+      const body = document.querySelector(
+        "#modalMultiGuna > div > div > div.modal-body"
+      );
+      const footer = document.querySelector(
+        "#modalMultiGuna > div > div > div.modal-footer"
+      );
 
       // Penerapan
       header.innerHTML = headerName;
 
-      body.innerHTML = '';
-      let html = '';
-      bodyComponent.forEach((e, i) => {
-        html += `<div class="form-group"><label for="InputFullname">${e.name}: </label>`;
-        if (e.type === 'select' ) {
-          html += `<select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="inputClass"  aria-controls="dataTable">`
-          e.val.forEach(e => html += `<option value="${e}">${e}</option>`)
-          html += `</select>`
-        } else html += `<input class="form-control" id="Input${e.name}" type="${e.name}" aria-describedby="${e.name}" placeholder="Enter ${e.name}" />`
-      
-        html += `</div>`
+      body.innerHTML = "";
+      let html = "";
+      if(bodyComponent.tunggal != undefined) body.innerHTML = `<div>${bodyComponent.tunggal}</div>`
+      else {
+        bodyComponent.forEach((e, i) => {
+          let input = e.typeInput == undefined ? "input" : e.typeInput;
+          let place = e.place == undefined ? `Enter ${e.name}` : e.place
+          let value = e.value === undefined ? '' : e.value
+          place = value !== '' ? '' : place;
 
-
-        // Saat Terakhir
-        if(i == ( bodyComponent.length - 1)) body.innerHTML = html
-
-
-      })
+          html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`;
+          if (e.type =="select") {
+            html += `<select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="inputClass"  aria-controls="dataTable" value="${value}">`;
+            e.val.forEach((e) => (html += `<option value="${e}">${e}</option>`));
+            html += `</select>`;
+          } else
+            html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
+  
+          html += `</div>`;
+  
+          // Saat Terakhir
+          if (i == bodyComponent.length - 1) body.innerHTML = html;
+        });
+      }
 
       // Bagian Footer
       footer.innerHTML = `<button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>`;
-      footerComponent.forEach(e => footer.innerHTML += `<button class="btn ${e.class}" type="button" >${e.name}</button>`);
-
+      footerComponent.forEach(
+        (e) =>
+          (footer.innerHTML += `<button class="btn ${e.class}" type="button" >${e.name}</button>`)
+      );
     }
 
     //  Event Klik Untuk Tombol Action Delete
     $(document).on("click", "button.delete", function (e) {
-      let user = $(this).parent().prevAll(".tableNamaAnggota").text();
-      $("#deleteModal div div.modal-content div.modal-body").html(
-        `Are you sure you want to remove <strong>${user}</strong> from the library members ?`
-      );
-      $("#deleteModal").modal("toggle");
+      let user = $(this).parent().prevAll(".tableName").text();
+      $("#modalMultiGuna").modal("toggle");
+      modalGenerate("Delete", {tunggal: `Are you sure you want to remove <strong>${user}</strong> from the library members ?`} , [{class: "btn-danger", name: "delete"}])
     });
 
     // Event saat baris diklik
     $(document).on("click", "table#tabelUtama > tbody > tr", function (e) {
       if (
-        !$(e.target).is(".actionTable , .fa-edit, .fa-trash, .edit, .delete, .details-control")
+        !$(e.target).is(
+          ".actionTable , .fa-edit, .fa-trash, .edit, .delete, .details-control"
+        )
       ) {
         // Check Apakan orang tua dari element yang diklik mempunyai class active
         if ($(e.target).parent().hasClass("active")) {
@@ -245,7 +324,7 @@ document.onreadystatechange = () => {
     });
 
     // Modal Box Delete By
-    $(document).on("click", '#deleteModalByButton', function (e) {
+    $(document).on("click", "#deleteModalByButton", function (e) {
       let rowActive = $("table#tabelUtama > tbody > tr.active");
       // let coloumName = $("table#tabelUtama > tbody > tr.active");
       let searchByColoum = cariBaris(
@@ -253,7 +332,7 @@ document.onreadystatechange = () => {
         ".tableClass",
         "12 Rpl 1"
       );
-      
+
       let group = $(
         "#deleteModalBy div div.modal-content div.modal-body .form-group:eq(1)"
       );
@@ -368,7 +447,10 @@ document.onreadystatechange = () => {
     function tampilkanNama(user1, state, toggleee) {
       let namaUser = "";
       $.each(user1, function (i, e) {
-        let nameOrTitle = $(e).children(".tableName").text() == '' ? $(e).children(".tableTitle").text() : $(e).children(".tableName").text();
+        let nameOrTitle =
+          $(e).children(".tableName").text() == ""
+            ? $(e).children(".tableTitle").text()
+            : $(e).children(".tableName").text();
         let user = state == 1 ? nameOrTitle : e;
         // Jika user1 lebih besar dari pada 5 maka
         if (user1.length > 5) {

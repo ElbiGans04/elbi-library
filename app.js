@@ -4,9 +4,11 @@
   let path = require("path");
   const router = require("./router/router");
   let db = require("./model/modelIndex");
-  let { sequelize, tabelBook, tabelUser, tabelCategory } = db();
+  let { sequelize, tabelBook, tabelUser, tabelClass } = db();
 
   // Perbaharui semua tabel (Menghapus semua tabel)
+  await tabelClass.hasMany(tabelUser);
+  await tabelUser.belongsTo(tabelClass)
   await sequelize.sync({ force: true });
 
   // Demo Untuk Tabel User isi Data demo untuk sementara saat pengembangan
@@ -54,14 +56,14 @@
         book_isbn: "9",
       },
     ], [
-      {for: 'member', category: '12 Rpl 1'},
-      {for: 'member', category: '12 Rpl 2'},
-      {for: 'member', category: '12 Rpl 3'}
+      {class: '12 Rpl 1'},
+      {class: '12 Rpl 2'},
+      {class: '12 Rpl 3'}
     ]
   ];
-  await tabelUser.bulkCreate(demo[0]);
-  await tabelBook.bulkCreate(demo[1]);
-  await tabelCategory.bulkCreate(demo[2])
+  // await tabelUser.bulkCreate(demo[0]);
+  // await tabelBook.bulkCreate(demo[1]);
+  await tabelClass.bulkCreate(demo[2])
 
   app.set("views", path.join(__dirname, "./views"));
   app.set("view engine", "pug");

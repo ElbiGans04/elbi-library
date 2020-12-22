@@ -1,13 +1,30 @@
 module.exports = function (data) {
-  let { without, coloumn, additional, elementName, type, category } = data;
+  let { without, coloumn, additional, elementName, category } = data;
+
+  // Style
   let { heading, buttonName1, buttonName2, buttonName3 } = elementName;
+  
+  
+  function optionCustom () {
+    let tesss = '';
+    let i = 0;
+    let panjang = Object.keys(category).length;
+    for(let koGi in category) {
+      if(i === 0) tesss += `<select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputShowClass" name="${category[koGi].dataValues.for}" aria-controls="dataTable"><option value="all">All</option>`;
+      let nilai = category[koGi].dataValues.category
+      tesss += `<option value="${nilai}">${nilai}</option>`
+      if(i == (panjang -1)) tesss += '</select>'
+      i++
+    }
+    return tesss
+  };
+
+
 
   let mix = data.mix.yes;
   let dataMix = data.mix.data;
 
-
   function bodyHtml() {
-    // if (type == "table") {
       let test = ``;
       let body = `
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -26,12 +43,7 @@ module.exports = function (data) {
             <div class="card shadow mb-4">
               <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
               <h6 class="font-weight-bold text-primary mb-0" id="rowSelect">1 rows selected</h6>
-              <select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputShowClass" name="deleteByClass" aria-controls="dataTable">
-                <option value="all">All</option>
-                <option value="12 Rpl 1">12 Rpl 1</option>
-                <option value="12 Rpl 2">12 Rpl 2</option>
-                <option value="12 Rpl 3">12 Rpl 3</option>
-              </select>
+              ${optionCustom()}
                 
               </div>
               <div class="card-body">
@@ -41,7 +53,6 @@ module.exports = function (data) {
                     <tr>`;
 
       let i = 0;
-
       body += looping(0, '', additional, 'th', false);
       test += looping(0, '', additional, 'th', false);
       for(let col in coloumn){
@@ -64,37 +75,41 @@ module.exports = function (data) {
   // Untuk meng-generate / menghasil kan table body
   function tbody(data, without, additional) {
     let result = ``;
-    let objProperti = Object.keys(data[0].dataValues);
-    for (let e in data) {
-      let i = 0;
-      let j = 0;
-
-      for (let test in data[e].dataValues) {
-        if (termasuk(without, j) === true) {
-          if (j == 0) result += `<tr`;
-          result += ` ${ambilKata(test, "_", "all", [0])}="${
-            data[e].dataValues[test]
-          }" `;
-          if (j == objProperti.length - 1) result += `>`;
+    if(data[0] !== undefined ) {
+      let objProperti = Object.keys(data[0].dataValues);
+      for (let e in data) {
+        let i = 0;
+        let j = 0;
+  
+        for (let test in data[e].dataValues) {
+          if (termasuk(without, j) === true) {
+            if (j == 0) result += `<tr`;
+            let tell = ambilKata(test, "_", "all", [0]).split(" ");
+            tell = tell.length > 1 ? tell[1] : tell[0];
+            result += ` table-${tell}="${
+              data[e].dataValues[test]
+            }" `;
+            if (j == objProperti.length - 1) result += `>`;
+          }
+  
+          j++;
         }
-
-        j++;
-      }
-
-      // Lopping additional
-      result += looping(0, "", additional, "td", null);
-      for (let f in data[e].dataValues) {
-        if (gaTermasuk(without, i) === true) {
-          let classElement = f.split("_")[1];
-          result += `<td class = 'table${ubahHurufPertama(classElement)}'>${
-            data[e].dataValues[f]
-          }</td>`;
+  
+        // Lopping additional
+        result += looping(0, "", additional, "td", null);
+        for (let f in data[e].dataValues) {
+          if (gaTermasuk(without, i) === true) {
+            let classElement = f.split("_")[1];
+            result += `<td class = 'table${ubahHurufPertama(classElement)}'>${
+              data[e].dataValues[f]
+            }</td>`;
+          }
+          i++;
         }
-        i++;
-      }
-      // Buat Additional
-      result += looping(1, "", additional, "td", true);
-      result += `</tr>`;
+        // Buat Additional
+        result += looping(1, "", additional, "td", true);
+        result += `</tr>`;
+    }
     }
     // Return
     return result;
@@ -121,13 +136,10 @@ module.exports = function (data) {
     let potongan = word.slice(0, 1);
     // Ubah Jadi Huruf besar
     potongan = potongan.toUpperCase();
-
     // Potong dari 0 sampai akhir
     word = word.slice(1);
-
     // Gabungkan
     potongan += word;
-
     // Kirim Potongannya
     return potongan;
   }
@@ -176,7 +188,7 @@ module.exports = function (data) {
       } else if (typeof ambil == "object") {
         if (termasuk(ambil, i) == true) result += `${e} `;
       } else if (typeof ambil == "string") {
-        if (word2.length > 1) {
+        if (word2.length > without.length) {
           if (gaTermasuk(without, i) == true) result += `${e} `;
         } else result += `${e} `;
       }
