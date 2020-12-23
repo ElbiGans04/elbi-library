@@ -5,8 +5,8 @@ const url = require("url");
 module.exports = async function (req, res) {
   try {
     let test = url.parse(req.url, true).query;
-    let { tabelBook, tabelClass } = await db();
-    let result = { data: await tabelBook.findAll({})};
+    let { tabelBook, tabelCategory } = await db();
+    let result = { data: await tabelBook.findAll({include: tabelCategory})};
 
     // Argument Untuk Membuat body
     let arg = {

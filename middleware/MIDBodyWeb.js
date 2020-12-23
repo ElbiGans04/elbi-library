@@ -8,12 +8,13 @@ module.exports = function (data) {
   function optionCustom () {
     let tesss = '';
     let i = 0;
-    let panjang = Object.keys(category).length;
+    let panjang = Object.values(category);
+    const obj = Object.keys(panjang[0].dataValues);
     for(let koGi in category) {
+      const nilai = category[koGi].dataValues[obj[obj.length - 1]];
       if(i === 0) tesss += `<select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputShowClass" name="${category[koGi].dataValues.for}" aria-controls="dataTable"><option value="all">All</option>`;
-      let nilai = category[koGi].dataValues.category
       tesss += `<option value="${nilai}">${nilai}</option>`
-      if(i == (panjang -1)) tesss += '</select>'
+      if(i == (panjang.length -1)) tesss += '</select>'
       i++
     }
     return tesss
@@ -55,9 +56,10 @@ module.exports = function (data) {
       let i = 0;
       body += looping(0, '', additional, 'th', false);
       test += looping(0, '', additional, 'th', false);
+      let objKey = Object.keys(coloumn);
       for(let col in coloumn){
         if(gaTermasuk(without, i) == true){
-          e = ambilKata(col, "_", "all", [0]);
+          e = col !== objKey[objKey.length - 1] ? ambilKata(col, "_", "all", [0]) : ambilKata(col, "_", "all", [1]);
           body += `<th>${e}</th>`;
           test += `<th>${e}</th>`;
         }
@@ -68,7 +70,6 @@ module.exports = function (data) {
       body += `</tr></thead><tfoot><tr>${test}</tr></tfoot><tbody>`;
       if (mix) body += `${tbody(dataMix, without, additional)}`;
       body += `</tbody></table></div></div></div>`;
-      
       return body
   }
 
@@ -80,29 +81,37 @@ module.exports = function (data) {
       for (let e in data) {
         let i = 0;
         let j = 0;
-  
+        
+        // Taruh without coloumn diattribute
         for (let test in data[e].dataValues) {
+          if (j == 0) result += `<tr`;
           if (termasuk(without, j) === true) {
-            if (j == 0) result += `<tr`;
-            let tell = ambilKata(test, "_", "all", [0]).split(" ");
+            let tell = ambilKata(test, "_", "all", [0], "tampil").split(" ");
             tell = tell.length > 1 ? tell[1] : tell[0];
             result += ` table-${tell}="${
               data[e].dataValues[test]
             }" `;
-            if (j == objProperti.length - 1) result += `>`;
+            
           }
-  
+          if (j == objProperti.length - 1) result += `>`;
+          
           j++;
         }
+    
   
         // Lopping additional
         result += looping(0, "", additional, "td", null);
+        // Lopping Nilai coloumn pada baris
         for (let f in data[e].dataValues) {
           if (gaTermasuk(without, i) === true) {
-            let classElement = f.split("_")[1];
-            result += `<td class = 'table${ubahHurufPertama(classElement)}'>${
-              data[e].dataValues[f]
-            }</td>`;
+            if(i !== objProperti.length - 2) {
+              let classElement = f.split("_")[1];
+              classElement = classElement == undefined || classElement == null ? f : classElement;
+              const idx = typeof data[e].dataValues[f] == 'object' ? Object.keys(data[e].dataValues[f].dataValues) : '' ;
+              
+              let nilai = typeof data[e].dataValues[f] == 'object' ? data[e].dataValues[f][idx[1]] : data[e].dataValues[f];
+              result += `<td class = 'table${classElement}'>${nilai}</td>`;
+            }
           }
           i++;
         }

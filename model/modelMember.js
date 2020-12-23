@@ -7,7 +7,6 @@ module.exports = function(sequelize, Datatype) {
         },
         member_number : Datatype.STRING,
         member_name: Datatype.STRING,
-        member_class: Datatype.STRING,
         member_date_of_birth: Datatype.STRING,
         member_adress: Datatype.STRING
     });
