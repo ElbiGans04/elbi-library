@@ -54,7 +54,7 @@ document.onreadystatechange = () => {
             {
               searchable: false,
               orderable: false,
-              target: 4,
+              targets: 4,
             },
           ],
           order: [[1, "asc"]],
@@ -464,17 +464,7 @@ document.onreadystatechange = () => {
       valObj.forEach(function (e, i) {
         if (i !== 0) {
           let rst = {};
-          let yes;
           rst.name = keyObj[i];
-          // option.forEach(function(el, i) {
-          //   if(el == e) {
-          //     rst.value = ambilOption();
-          //     rst.type = "select";
-          //   } else {
-          //     rst.value = e;
-          //     rst.type = "input";
-          //   }
-          // });
           for(let opt in option) {
               if(option[opt] == e) {
                 rst.value = ambilOption();

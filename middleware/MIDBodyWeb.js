@@ -29,20 +29,22 @@ module.exports = function (data) {
   let mix = data.mix.yes;
   let dataMix = data.mix.data;
 
+
   // Generate Body Html But only thead and tfoot
   function bodyHtml() {
       let test = ``;
+      const namaModel = coloumn.id.Model.name;
       let body = `
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">${heading}</h1>
               <div class="actionMenu">
                 <!-- Class-->
-                <button class="btn btn-primary disableButton" id="modifyClass" type="button" data-toggle="modal" data-target="#modifyClassModal" title="Modify library members" aria-describe="Modify library members"><span class="icon text-white-50"><i class="${buttonName1.icon}"></i></span><span class="text">${buttonName1.name}</span></button>
+                <button class="btn btn-primary disableButton" id="modifyClass" type="button" data-toggle="modal" data-target="#modifyClassModal" title="modification of ${namaModel} categories" aria-describe="modification of ${namaModel} categories"><span class="icon text-white-50"><i class="${buttonName1.icon}"></i></span><span class="text">${buttonName1.name}</span></button>
                 <!-- Add Member-->
-                <button class="btn btn-primary disableButton" type="button" data-toggle="modal" data-target="#addMember" title="Add library members" aria-describe="Add library members"><span class="icon text-white-50"><i class="${buttonName2.icon}"></i></span><span class="text">${buttonName2.name}</span></button>
+                <button class="btn btn-primary disableButton" type="button" data-toggle="modal" data-target="#addMember" title="add ${namaModel}" aria-describe="add ${namaModel}"><span class="icon text-white-50"><i class="${buttonName2.icon}"></i></span><span class="text">${buttonName2.name}</span></button>
                 <!-- End add member-->
                 <!-- Remove All-->
-                <button class="btn btn-danger" id="deleteModalByButton" type="button" data-toggle="modal" data-target="#removeMember" title="Remove class-based members or based on selected rows" aria-describe="Remove class-based members or based on selected rows"><span class="icon text-white-50"><i class="${buttonName3.icon}"></i></span><span class="text">${buttonName3.name}</span></button>
+                <button class="btn btn-danger" id="deleteModalByButton" type="button" data-toggle="modal" data-target="#removeMember" title="Remove ${namaModel} based on certain settings" aria-describe="Remove ${namaModel} based on certain settings"><span class="icon text-white-50"><i class="${buttonName3.icon}"></i></span><span class="text">${buttonName3.name}</span></button>
                 <!-- End of remove all-->
               </div>
             </div>
