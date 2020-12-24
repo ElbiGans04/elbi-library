@@ -10,7 +10,7 @@ module.exports = async function (req, res) {
 
     // Argument Untuk Membuat body
     let arg = {
-      category: await tabelCategory.findAll({}),
+      category: await tabelCategory.findAll({raw: true}),
       without: [0, 1, 5, 6, 7, 8, 9],
       coloumn: await tabelBook.rawAttributes,
       additional: [[null], ["Action"]],
@@ -29,7 +29,10 @@ module.exports = async function (req, res) {
           icon: "fas fa-trash",
           name: "Delete By",
         },
-      },
+      },identitas : [
+        {i: 2, as: 'identifier'},
+        {i: 11, as: 'group'}
+      ]
     };
     let hasilRender = renderWeb(arg);
 

@@ -8,11 +8,9 @@ module.exports = async function (req, res) {
     let { tabelMember, tabelClass } = await db();
     let result = { data: await tabelMember.findAll({include: tabelClass}) };
 
-
-
     // Argument Untuk Render web
     let arg = {
-      category: await tabelClass.findAll({}),
+      category: await tabelClass.findAll({raw: true}),
       without: [0, 5,6],
       coloumn: await tabelMember.rawAttributes,
       additional: [[null], [ "Action"]],
@@ -32,7 +30,12 @@ module.exports = async function (req, res) {
           name: "Delete By",
         },
       },
+      identitas : [
+        {i: 2, as: 'identifier'},
+        {i: 8, as: 'group'}
+      ]
     };
+
     let hasilRender = renderWeb(arg);
 
     if (test.as == "html") res.json({ html: hasilRender, data: result });

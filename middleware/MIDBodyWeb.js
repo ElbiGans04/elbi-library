@@ -1,23 +1,27 @@
 module.exports = function (data) {
-  let { without, coloumn, additional, elementName, category } = data;
+  let { without, coloumn, additional, elementName, category, identitas } = data;
 
   // Style
   let { heading, buttonName1, buttonName2, buttonName3 } = elementName;
   
-  
+  // Buat Option 
   function optionCustom () {
-    let tesss = '';
-    let i = 0;
-    let panjang = Object.values(category);
-    const obj = Object.keys(panjang[0].dataValues);
-    for(let koGi in category) {
-      const nilai = category[koGi].dataValues[obj[obj.length - 1]];
-      if(i === 0) tesss += `<select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputShowClass" name="${category[koGi].dataValues.for}" aria-controls="dataTable"><option value="all">All</option>`;
-      tesss += `<option value="${nilai}">${nilai}</option>`
-      if(i == (panjang.length -1)) tesss += '</select>'
-      i++
-    }
-    return tesss
+    let result = '';
+    // Jadikan Sebagai Array dan buat perulangan
+    const cate = Array.from(category);
+    cate.forEach(function(e,i){
+      // Buat Object Key dari element Terkait
+      const objKey = Object.keys(e);
+      // Ambil Nilai
+      const nilai = e[objKey[1]];
+      // Saat index == 0
+      if(i === 0) result += `<select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputShowClass" name="" aria-controls="dataTable"><option value="all">All</option>`;
+      result += `<option value="${nilai}">${nilai}</option>`
+      // Saat Terakhir
+      if(i == (cate.length -1)) result += '</select>'
+    });
+
+    return result
   };
 
 
@@ -25,6 +29,7 @@ module.exports = function (data) {
   let mix = data.mix.yes;
   let dataMix = data.mix.data;
 
+  // Generate Body Html But only thead and tfoot
   function bodyHtml() {
       let test = ``;
       let body = `
@@ -54,22 +59,32 @@ module.exports = function (data) {
                     <tr>`;
 
       let i = 0;
-      body += looping(0, '', additional, 'th', false);
-      test += looping(0, '', additional, 'th', false);
+      // Looping 
+      const lop0 = looping(0, '', additional, 'th', false);
+      body += lop0;
+      test += lop0;
       let objKey = Object.keys(coloumn);
       for(let col in coloumn){
         if(gaTermasuk(without, i) == true){
+          const namaModel = coloumn[col].Model.name;
           e = col !== objKey[objKey.length - 1] ? ambilKata(col, "_", "all", [0]) : ambilKata(col, "_", "all", [1]);
-          body += `<th>${e}</th>`;
+          body += `<th name='${namaModel}'>${e}</th>`;
           test += `<th>${e}</th>`;
         }
         i++
       }
-      body += looping(1, '', additional, 'th', false);
-      test += looping(1, '', additional, 'th', false);
+      // Looping 0
+      const lop1 = looping(1, '', additional, 'th', false);
+      body += lop1;
+      test += lop1;
+
+      // Buat coloumn foot
       body += `</tr></thead><tfoot><tr>${test}</tr></tfoot><tbody>`;
+      // Jika Mix = true maka buat tbody
       if (mix) body += `${tbody(dataMix, without, additional)}`;
+      // Tambahkan bagian belakangnya
       body += `</tbody></table></div></div></div>`;
+      
       return body
   }
 
@@ -97,28 +112,29 @@ module.exports = function (data) {
           
           j++;
         }
-    
   
         // Lopping additional
         result += looping(0, "", additional, "td", null);
         // Lopping Nilai coloumn pada baris
         for (let f in data[e].dataValues) {
-          if (gaTermasuk(without, i) === true) {
-            if(i !== objProperti.length - 2) {
-              let classElement = f.split("_")[1];
-              classElement = classElement == undefined || classElement == null ? f : classElement;
-              const idx = typeof data[e].dataValues[f] == 'object' ? Object.keys(data[e].dataValues[f].dataValues) : '' ;
-              
-              let nilai = typeof data[e].dataValues[f] == 'object' ? data[e].dataValues[f][idx[1]] : data[e].dataValues[f];
-              result += `<td class = 'table${classElement}'>${nilai}</td>`;
-            }
+          if (gaTermasuk(without, i) === true && i !== objProperti.length - 2) {
+            const id = termasuk(identitas, i , 'i');
+            const idd = id !== undefined ? `data-${id.value}="true"` : '';
+            
+
+            let classElement = f.split("_")[1];
+            classElement = classElement == undefined || classElement == null ? f : classElement;
+            const idx = typeof data[e].dataValues[f] == 'object' ? Object.keys(data[e].dataValues[f].dataValues) : '' ;
+
+            let nilai = typeof data[e].dataValues[f] == 'object' ? data[e].dataValues[f][idx[1]] : data[e].dataValues[f];
+            result += `<td class = 'table-${classElement}' ${idd}>${nilai}</td>`;
           }
           i++;
         }
         // Buat Additional
         result += looping(1, "", additional, "td", true);
         result += `</tr>`;
-    }
+      }
     }
     // Return
     return result;
@@ -179,11 +195,18 @@ module.exports = function (data) {
   }
 
   // Check Apakah i termasuk kedalam salah satu withValue
-  function termasuk(withValue, i) {
+  function termasuk(withValue, i, el) {
     for (let j in withValue) {
-      if (withValue[j] === i) return true;
+      const kon = el === undefined ? withValue[j]  : withValue[j][el];
+      if ( kon === i) {
+        if(el != undefined) return { value: withValue[j]['as'], kondisi: true }
+        else return true;
+      }
     }
-  }
+  };
+  termasuk(identitas, 1, 'i')
+
+  
 
   // untuk menambil kata ke-berapa dari string
   function ambilKata(word, pemisah, ambil, without) {

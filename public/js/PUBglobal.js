@@ -1,6 +1,6 @@
 document.onreadystatechange = () => {
   if (document.readyState === "complete") {
-    // Tambahkan classActive saat load
+    // Tambahkan class Active pada li saat load
     let testVariabelActive = document.getElementById("accordionSidebar");
     let testLi = testVariabelActive.getElementsByTagName("li");
     for (let e of testLi) {
@@ -100,30 +100,6 @@ document.onreadystatechange = () => {
       }
     }
 
-    function ambilAttribute(i) {
-      let test = {};
-      let tr = document.querySelectorAll("#tabelUtama > tbody tr[role=row]");
-      for (let j = 0; j < tr[i].attributes.length - 4; j++) {
-        let name = tr[i].attributes[j].nodeName.split("-")[1];
-        test[name] = tr[i].attributes[j].nodeValue;
-      }
-
-      return test;
-    }
-
-    function gaTermasuk(dont, value) {
-      let i = 0;
-      if (dont.length > 0) {
-        for (let a of dont) {
-          // Jika Value sama dengan element didalam dont maka return false
-          if (a === value) return false;
-          // return true saat 'i' == dont length. Mengapa saya tidak mengecheck nilai yang sama lagi ? Kerena telah dicheck oleh 'if'  diatas
-          if (i === dont.length - 1) return true;
-          i++;
-        }
-      } else return true;
-    }
-
     // // Jalankan
     tabel();
 
@@ -178,121 +154,45 @@ document.onreadystatechange = () => {
     $(document).on("click", "button.edit", function (e) {
       $("#modalMultiGuna").modal("toggle");
 
-
-      // Ambil Option
-      const option = document.querySelectorAll("#inputShowClass > option");
-      const arVal = [];
-      option.forEach(function (e, i) {
-        if (i !== 0) arVal.push(e.textContent);
-      });
-
+      // ambil Option
+      let arVal = ambilOption();
 
       // Dapatkan Index Li
-      let li = document.querySelectorAll('#tabelUtama > tbody > tr');
-      let li2 = this.parentElement.parentElement;
-      let hasilIndex;
-      li.forEach(function(e, i) {
-        if(e == li2) hasilIndex = i
-      })
+      let hasilIndex = ambilIndexLi(this);
 
       // Ambil Attribute bedasarkan coloumn yang diklik
-      let obj = ambilAttribute(hasilIndex)
+      let obj = ambilAttribute(hasilIndex);
 
-      let test = $(this).parent().prevAll();
-      const thead = document.querySelector('#tabelUtama > thead');
-      const tHeadChild = Array.from(thead.children[0].children);
+      // Gabungkan Baris dengan Attibute
+      MixRowsAndAttrs(this, obj);
 
-      $.each(tHeadChild, function(i,e){
-        let index = $(e).nextAll().length - 1;
-        if(i !== 0 && (tHeadChild.length - 1) !== i) obj[e.textContent] = test[index].textContent
-      });
+      // generate modal Body with type
+      const result = modalBody(obj, arVal);
 
-      let result = [];
-      const keyObj = Object.keys(obj);
-      const valObj = Object.values(obj)
-      keyObj.forEach(function(e,i){
-        if(i !== 0 ) {
-          let rst = {};
-          rst.name = e;
-          let type = e.toLocaleLowerCase() == 'class' ? "select" : "input";
-          type == "select" ? rst.val = arVal : rst;
-          rst.value = valObj[i]
-          rst.type = type;
-          result.push(rst)
-        }
-      });
+      // Panggil Fungsi Modal-generate
+      modalGenerate("Update", result, [
+        {
+          class: "btn-primary",
+          name: "update",
+        },
+      ]);
 
-
-      modalGenerate(
-        "Update",
-        result,
-        [
-          {
-            class: "btn-primary",
-            name: "update",
-          },
-        ]
-      );
-
-      let inChild = Array.from(li[hasilIndex].children);
-      inChild.forEach(function(e,i){
-        if(e.matches('.tableClass')) document.getElementById('inputClass').value = e.textContent
-      })
-
-      
-      
+      // Setel Nilai Default modal category
+      setModalNilai(hasilIndex);
     });
-
-    function modalGenerate(headerName, bodyComponent, footerComponent) {
-      const header = document.getElementById(`multigunaHeader`);
-      const body = document.querySelector(
-        "#modalMultiGuna > div > div > div.modal-body"
-      );
-      const footer = document.querySelector(
-        "#modalMultiGuna > div > div > div.modal-footer"
-      );
-
-      // Penerapan
-      header.innerHTML = headerName;
-
-      body.innerHTML = "";
-      let html = "";
-      if(bodyComponent.tunggal != undefined) body.innerHTML = `<div>${bodyComponent.tunggal}</div>`
-      else {
-        bodyComponent.forEach((e, i) => {
-          let input = e.typeInput == undefined ? "input" : e.typeInput;
-          let place = e.place == undefined ? `Enter ${e.name}` : e.place
-          let value = e.value === undefined ? '' : e.value
-          place = value !== '' ? '' : place;
-
-          html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`;
-          if (e.type =="select") {
-            html += `<select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="inputClass"  aria-controls="dataTable" value="${value}">`;
-            e.val.forEach((e) => (html += `<option value="${e}">${e}</option>`));
-            html += `</select>`;
-          } else
-            html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
-  
-          html += `</div>`;
-  
-          // Saat Terakhir
-          if (i == bodyComponent.length - 1) body.innerHTML = html;
-        });
-      }
-
-      // Bagian Footer
-      footer.innerHTML = `<button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>`;
-      footerComponent.forEach(
-        (e) =>
-          (footer.innerHTML += `<button class="btn ${e.class}" type="button" >${e.name}</button>`)
-      );
-    }
 
     //  Event Klik Untuk Tombol Action Delete
     $(document).on("click", "button.delete", function (e) {
-      let user = $(this).parent().prevAll(".tableName").text();
+      let user = $(this).parent().prevAll("[data-identifier=true]").text();
+      const judul = $('#content > div > div.d-sm-flex.align-items-center.justify-content-between.mb-4 > h1').html().toLowerCase();
       $("#modalMultiGuna").modal("toggle");
-      modalGenerate("Delete", {tunggal: `Are you sure you want to remove <strong>${user}</strong> from the library members ?`} , [{class: "btn-danger", name: "delete"}])
+      modalGenerate(
+        "Delete",
+        {
+          tunggal: `Are you sure you want to remove <strong>${user}</strong> from ${judul} ?`,
+        },
+        [{ class: "btn-danger", name: "delete" }]
+      );
     });
 
     // Event saat baris diklik
@@ -498,6 +398,139 @@ document.onreadystatechange = () => {
       let search2 = "";
       word.forEach((e) => (search2 += e.toLowerCase()));
       return search2;
+    }
+
+    function ambilAttribute(i) {
+      let test = {};
+      let tr = document.querySelectorAll("#tabelUtama > tbody tr[role=row]");
+      for (let j = 0; j < tr[i].attributes.length - 4; j++) {
+        let name = tr[i].attributes[j].nodeName.split("-")[1];
+        test[name] = tr[i].attributes[j].nodeValue;
+      }
+
+      return test;
+    }
+
+    function gaTermasuk(dont, value) {
+      let i = 0;
+      if (dont.length > 0) {
+        for (let a of dont) {
+          // Jika Value sama dengan element didalam dont maka return false
+          if (a === value) return false;
+          // return true saat 'i' == dont length. Mengapa saya tidak mengecheck nilai yang sama lagi ? Kerena telah dicheck oleh 'if'  diatas
+          if (i === dont.length - 1) return true;
+          i++;
+        }
+      } else return true;
+    }
+
+    function ambilOption() {
+      // Ambil Option
+      const option = document.querySelectorAll("#inputShowClass > option");
+      const arVal = [];
+      option.forEach(function (e, i) {
+        if (i !== 0) arVal.push(e.textContent);
+      });
+      return arVal;
+    }
+
+    function ambilIndexLi(el) {
+      let li = document.querySelectorAll("#tabelUtama > tbody > tr");
+      let li2 = el.parentElement.parentElement;
+      let hasilIndex;
+      li.forEach(function (e, i) {
+        if (e == li2) hasilIndex = i;
+      });
+      return hasilIndex;
+    }
+
+    function MixRowsAndAttrs(el, obj) {
+      let test = $(el).parent().prevAll();
+      const thead = document.querySelector("#tabelUtama > thead");
+      const tHeadChild = Array.from(thead.children[0].children);
+
+      $.each(tHeadChild, function (i, e) {
+        let index = $(e).nextAll().length - 1;
+        if (i !== 0 && tHeadChild.length - 1 !== i)
+          obj[e.textContent] = test[index].textContent;
+      });
+    }
+
+    function modalBody(obj, arVal) {
+      let result = [];
+      const keyObj = Object.keys(obj);
+      const valObj = Object.values(obj);
+      keyObj.forEach(function (e, i) {
+        if (i !== 0) {
+          let rst = {};
+          rst.name = e;
+          let type = e.toLocaleLowerCase() == "class" ? "select" : "input";
+          type == "select" ? (rst.val = arVal) : rst;
+          rst.value = valObj[i];
+          rst.type = type;
+          result.push(rst);
+        }
+      });
+
+      return result;
+    }
+
+    function setModalNilai(i) {
+      let li = document.querySelectorAll("#tabelUtama > tbody > tr");
+      let inChild = Array.from(li[i].children);
+      inChild.forEach(function (e, i) {
+        if (e.matches(".table-class"))
+          document.getElementById("inputClass").value = e.textContent;
+      });
+      return "success";
+    }
+
+    function modalGenerate(headerName, bodyComponent, footerComponent) {
+      const header = document.getElementById(`multigunaHeader`);
+      const body = document.querySelector(
+        "#modalMultiGuna > div > div > div.modal-body"
+      );
+      const footer = document.querySelector(
+        "#modalMultiGuna > div > div > div.modal-footer"
+      );
+
+      // Penerapan
+      header.innerHTML = headerName;
+
+      body.innerHTML = "";
+      let html = "";
+      if (bodyComponent.tunggal != undefined)
+        body.innerHTML = `<div>${bodyComponent.tunggal}</div>`;
+      else {
+        bodyComponent.forEach((e, i) => {
+          let input = e.typeInput == undefined ? "input" : e.typeInput;
+          let place = e.place == undefined ? `Enter ${e.name}` : e.place;
+          let value = e.value === undefined ? "" : e.value;
+          place = value !== "" ? "" : place;
+
+          html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`;
+          if (e.type == "select") {
+            html += `<select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="inputClass"  aria-controls="dataTable" value="${value}">`;
+            e.val.forEach(
+              (e) => (html += `<option value="${e}">${e}</option>`)
+            );
+            html += `</select>`;
+          } else
+            html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
+
+          html += `</div>`;
+
+          // Saat Terakhir
+          if (i == bodyComponent.length - 1) body.innerHTML = html;
+        });
+      }
+
+      // Bagian Footer
+      footer.innerHTML = `<button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>`;
+      footerComponent.forEach(
+        (e) =>
+          (footer.innerHTML += `<button class="btn ${e.class}" type="button" >${e.name}</button>`)
+      );
     }
     // Akir Event table
   }
