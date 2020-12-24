@@ -168,7 +168,7 @@ document.onreadystatechange = () => {
 
       // generate modal Body with type
       const result = modalBody(obj, arVal);
-
+      
       // Panggil Fungsi Modal-generate
       modalGenerate("Update", result, [
         {
@@ -460,14 +460,32 @@ document.onreadystatechange = () => {
       let result = [];
       const keyObj = Object.keys(obj);
       const valObj = Object.values(obj);
-      keyObj.forEach(function (e, i) {
+      const option = ambilOption();
+      valObj.forEach(function (e, i) {
         if (i !== 0) {
           let rst = {};
-          rst.name = e;
-          let type = e.toLocaleLowerCase() == "class" ? "select" : "input";
-          type == "select" ? (rst.val = arVal) : rst;
-          rst.value = valObj[i];
-          rst.type = type;
+          let yes;
+          rst.name = keyObj[i];
+          // option.forEach(function(el, i) {
+          //   if(el == e) {
+          //     rst.value = ambilOption();
+          //     rst.type = "select";
+          //   } else {
+          //     rst.value = e;
+          //     rst.type = "input";
+          //   }
+          // });
+          for(let opt in option) {
+              if(option[opt] == e) {
+                rst.value = ambilOption();
+                rst.type = "select";
+                result.push(rst);
+                return
+              } else {
+                rst.value = e;
+                rst.type = "input";
+              }           
+          }
           result.push(rst);
         }
       });
@@ -479,8 +497,7 @@ document.onreadystatechange = () => {
       let li = document.querySelectorAll("#tabelUtama > tbody > tr");
       let inChild = Array.from(li[i].children);
       inChild.forEach(function (e, i) {
-        if (e.matches(".table-class"))
-          document.getElementById("inputClass").value = e.textContent;
+        if (e.matches('[data-group=true]'))document.getElementById("inputClass").value = e.textContent;
       });
       return "success";
     }
@@ -511,7 +528,7 @@ document.onreadystatechange = () => {
           html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`;
           if (e.type == "select") {
             html += `<select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="inputClass"  aria-controls="dataTable" value="${value}">`;
-            e.val.forEach(
+            e.value.forEach(
               (e) => (html += `<option value="${e}">${e}</option>`)
             );
             html += `</select>`;
