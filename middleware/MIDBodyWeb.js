@@ -39,12 +39,12 @@ module.exports = function (data) {
               <h1 class="h3 mb-0 text-gray-800">${heading}</h1>
               <div class="actionMenu">
                 <!-- Class-->
-                <button class="btn btn-primary disableButton" id="modifyClass" type="button" data-toggle="modal" data-target="#modifyClassModal" title="modification of ${namaModel} categories" aria-describe="modification of ${namaModel} categories"><span class="icon text-white-50"><i class="${buttonName1.icon}"></i></span><span class="text">${buttonName1.name}</span></button>
+                <button class="btn btn-primary disableButton" id="modifyClass" type="button" data-toggle="modal"  title="modification of ${namaModel} categories" aria-describe="modification of ${namaModel} categories"><span class="icon text-white-50"><i class="${buttonName1.icon}"></i></span><span class="text">${buttonName1.name}</span></button>
                 <!-- Add Member-->
-                <button class="btn btn-primary disableButton" type="button" data-toggle="modal" data-target="#addMember" title="add ${namaModel}" aria-describe="add ${namaModel}"><span class="icon text-white-50"><i class="${buttonName2.icon}"></i></span><span class="text">${buttonName2.name}</span></button>
+                <button class="btn btn-primary disableButton" id="addMember" type="button" data-toggle="modal"  title="add ${namaModel}" aria-describe="add ${namaModel}"><span class="icon text-white-50"><i class="${buttonName2.icon}"></i></span><span class="text">${buttonName2.name}</span></button>
                 <!-- End add member-->
                 <!-- Remove All-->
-                <button class="btn btn-danger" id="deleteModalByButton" type="button" data-toggle="modal" data-target="#removeMember" title="Remove ${namaModel} based on certain settings" aria-describe="Remove ${namaModel} based on certain settings"><span class="icon text-white-50"><i class="${buttonName3.icon}"></i></span><span class="text">${buttonName3.name}</span></button>
+                <button class="btn btn-danger" id="deleteModalByButton" type="button" data-toggle="modal" title="Remove ${namaModel} based on certain settings" aria-describe="Remove ${namaModel} based on certain settings"><span class="icon text-white-50"><i class="${buttonName3.icon}"></i></span><span class="text">${buttonName3.name}</span></button>
                 <!-- End of remove all-->
               </div>
             </div>
@@ -58,7 +58,18 @@ module.exports = function (data) {
               <div class="table-responsive">
                 <table class="table table-bordered display" id="tabelUtama" width="100%" cellspacing="0">
                   <thead>
-                    <tr>`;
+                   <tr data-hidden="`;
+      let z = 0;                   
+      for(let col in coloumn) {
+        if(termasuk(without, z) == true) {
+          const id = termasuk(identitas, z , 'i');
+          const idd = id !== undefined ? `${id.value}` : '';
+          body += `${col}/${idd}/-/`
+        }
+        z++
+      };
+      body += '">'
+      
 
       let i = 0;
       // Looping 
@@ -66,11 +77,14 @@ module.exports = function (data) {
       body += lop0;
       test += lop0;
       let objKey = Object.keys(coloumn);
+
       for(let col in coloumn){
         if(gaTermasuk(without, i) == true){
+          const id = termasuk(identitas, i , 'i');
+          const idd = id !== undefined ? `data-as="${id.value}"` : '';
           const namaModel = coloumn[col].Model.name;
           e = col !== objKey[objKey.length - 1] ? ambilKata(col, "_", "all", [0]) : ambilKata(col, "_", "all", [1]);
-          body += `<th name='${namaModel}'>${e}</th>`;
+          body += `<th data-model='${namaModel}' ${idd} data-name="${col}">${e}</th>`;
           test += `<th>${e}</th>`;
         }
         i++
@@ -101,16 +115,21 @@ module.exports = function (data) {
         
         // Taruh without coloumn diattribute
         for (let test in data[e].dataValues) {
-          if (j == 0) result += `<tr`;
+          if (j == 0) result += `<tr data-hidden="`;
           if (termasuk(without, j) === true) {
-            let tell = ambilKata(test, "_", "all", [0], "tampil").split(" ");
-            tell = tell.length > 1 ? tell[1] : tell[0];
-            result += ` table-${tell}="${
+            // let tell = ambilKata(test, "_", "all", [0], "tampil").split(" ");
+            // tell = tell.length > 1 ? tell[1] : tell[0];
+            const id = termasuk(identitas, j , 'i');
+            const idd = id !== undefined ? `${id.value}` : '';
+            
+            result += `${test}=${
               data[e].dataValues[test]
-            }" `;
+            }/${idd}`;
+
+            result += '/-/'
             
           }
-          if (j == objProperti.length - 1) result += `>`;
+          if (j == objProperti.length - 1) result += `">`;
           
           j++;
         }

@@ -30,8 +30,9 @@ module.exports = async function (req, res) {
           name: "Delete By",
         },
       },identitas : [
+        {i: 1, as: 'image'},
         {i: 2, as: 'identifier'},
-        {i: 11, as: 'group'}
+        {i: 10, as: 'group'},
       ]
     };
     let hasilRender = renderWeb(arg);

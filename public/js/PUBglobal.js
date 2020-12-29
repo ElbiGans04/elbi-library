@@ -36,9 +36,11 @@ document.onreadystatechange = () => {
       } else if (navActiveName == "book") {
         function format(d) {
           return (
-            `Page Thickness: ${d.thickness} <br>` +
-            `Isbn: ${d.isbn} <br>` +
-            `Publisher : ${d.publisher}`
+            `Page Thickness: ${d.book_page_thickness} <br>` +
+            `Isbn: ${d.book_isbn} <br>` +
+            `Publisher : ${d.book_publisher} <br>` +
+            `CreateAt : ${d.createdAt} <br>` +
+            `UpdateAt : ${d.updatedAt}`
           );
         }
 
@@ -54,7 +56,7 @@ document.onreadystatechange = () => {
             {
               searchable: false,
               orderable: false,
-              targets: 4,
+              targets: 5,
             },
           ],
           order: [[1, "asc"]],
@@ -79,9 +81,7 @@ document.onreadystatechange = () => {
               detailRows.splice(idx, 1);
             } else {
               tr.addClass("details");
-              // let attr = ambilAttribute(row[0][0]);
-              // console.log(attr[row[0][0]])
-              row.child(format(ambilAttribute(row[0][0]))).show();
+              row.child(format(ambilAttribute(row[0][0], 'hidden'))).show();
 
               // Add to the 'open' array
               if (idx === -1) {
@@ -164,7 +164,7 @@ document.onreadystatechange = () => {
       let obj = ambilAttribute(hasilIndex);
 
       // Gabungkan Baris dengan Attibute
-      MixRowsAndAttrs(this, obj);
+      MixRowsAndAttrs(this, obj, true);
 
       // generate modal Body with type
       const result = modalBody(obj, arVal);
@@ -184,7 +184,11 @@ document.onreadystatechange = () => {
     //  Event Klik Untuk Tombol Action Delete
     $(document).on("click", "button.delete", function (e) {
       let user = $(this).parent().prevAll("[data-identifier=true]").text();
-      const judul = $('#content > div > div.d-sm-flex.align-items-center.justify-content-between.mb-4 > h1').html().toLowerCase();
+      const judul = $(
+        "#content > div > div.d-sm-flex.align-items-center.justify-content-between.mb-4 > h1"
+      )
+        .html()
+        .toLowerCase();
       $("#modalMultiGuna").modal("toggle");
       modalGenerate(
         "Delete",
@@ -225,26 +229,44 @@ document.onreadystatechange = () => {
 
     // Modal Box Delete By
     $(document).on("click", "#deleteModalByButton", function (e) {
+      $("#modalMultiGuna").modal("show");
+      const option = ambilOption();
+      modalGenerate(
+        "Delete by",
+        [
+          {
+            name: "Delete By",
+            value: ["Delete by Class", "Delete by selected row"],
+            type: "select",
+            id: true,
+          },
+          { name: "Class", value: option, type: "select", id: "deleteByClass" },
+          {type: 'div' , class: 'alert alert-danger'}
+        ],
+        [{ class: "btn-danger", name: "DELETE" }]
+      );
+
       let rowActive = $("table#tabelUtama > tbody > tr.active");
+
       // let coloumName = $("table#tabelUtama > tbody > tr.active");
       let searchByColoum = cariBaris(
         "#tabelUtama tbody tr",
-        ".tableClass",
-        "12 Rpl 1"
+        "[data-group=true]",
+        option[0]
       );
 
-      let group = $(
-        "#deleteModalBy div div.modal-content div.modal-body .form-group:eq(1)"
-      );
-
+      let group = $(`#modalMultiGuna > div > div > div.modal-body > div:nth-child(2)`);
+      const optionELement = $('#deleteBy option');
       // Jika anda baris yang aktif
       if ($(rowActive).length >= 1) {
+        const optAttr = optionELement[1].getAttribute('value');
+        $("#deleteBy").val(optAttr);
         tampilkanNama(rowActive, 1, true);
-        $("#deleteBy").val("rows");
         group.css("display", "none");
       }
       if ($(rowActive).length === 0) {
-        $("#deleteBy").val("class");
+        const optAttr = optionELement[0].getAttribute('value');
+        $("#deleteBy").val(optAttr);
         group.css("display", "block");
         return tampilkanNama(searchByColoum, 2, true);
       }
@@ -252,50 +274,83 @@ document.onreadystatechange = () => {
 
     // Event Select Option Class
     // Event Select Option By
-    $("#deleteBy").on("change", function (e) {
+    $(document).on("change", '#deleteBy', function (e) {
       let value = $(this).val();
-      let alertSelection = $(
-        "#deleteModalBy div div.modal-content div.modal-body .form-group:eq(1)"
-      );
       let rows = $("table#tabelUtama > tbody > tr.active");
+      let group = $(`#modalMultiGuna > div > div > div.modal-body > div:nth-child(2)`);
 
       // Jika Nilainya sama dengan 'rows'
-      if (value == "rows") {
+      if (value == "Selected") {
+        group.css('display', 'none');
         // Jika user belum select rows apapun maka tampilkan modal
         if ($(rows).length <= 0) {
-          $("#deleteModalBy").modal("hide");
-          $("#multiguna").modal("toggle");
-        } else {
-          tampilkanNama(rows, 1, false);
-          alertSelection.css("display", "none");
-        }
+          modalGenerate('Warning', 
+          {tunggal: `<div class="form-group"><div class="alert alert-danger"><strong>Please select the row first</strong></div></div>`}
+          , [])
+        } else tampilkanNama(rows, 1, false);
       }
-
+      
       // Jika Nilainya Class
-      if (value == "class") {
-        let two = cariBaris("#tabelUtama tbody tr", ".tableClass", "12 Rpl 1");
-        alertSelection.css("display", "block");
-        tampilkanNama(two, 2, false);
+      if (value == "Class") {
+        const option = ambilOption();
+        let searchByColoum = cariBaris(
+          "#tabelUtama tbody tr",
+          "[data-group=true]",
+          option[0]
+          );
+        group.css('display', 'block');
+        tampilkanNama(searchByColoum, 2, false);
       }
     });
 
     // Event change untuk input class dideleteByModal
-    $("#deleteByClass").on("change", function (e) {
+    $(document).on("change", "#deleteByClass", function (e) {
+      const nilai = $(this).val().toLowerCase();
       let value = cariBaris(
         "#tabelUtama tbody tr",
-        ".tableClass",
-        $(this).val()
+        "[data-group=true]",
+        nilai
       );
       tampilkanNama(value, 2, false);
     });
 
     // Hilangkan class aktif saat user mengklik tombol close
-    $(
-      "#deleteModalBy .modal-footer button:first-child, #deleteModalBy .modal-header button"
-    ).on("click", function (e) {
+    $("#modalMultiGuna").on("click", "[data-dismiss=modal]", function (e) {
       disabledOrNo(false);
       $("table#tabelUtama > tbody > tr.active").removeClass("active");
       $("#rowSelect").css("opacity", "0");
+    });
+
+    // Add Modal
+    $(document).on('click', '#addMember', function(e){
+      $('#modalMultiGuna').modal('show');
+      // let dataHide = $('#tabelUtama thead tr');
+      // dataHide = dataHide.data('hidden').split('/-/');
+      // dataHide.pop();
+      // let obj = [];
+      // $.each($('#tabelUtama thead tr').children(), function(i, e){
+      //   if(i !== 0 && i !== ($('#tabelUtama thead tr').children().length - 1)) {
+      //     dataHide.push($(e).text())
+      //   }
+      // });
+      // console.log(dataHide)
+      // dataHide.forEach(function(e,i){
+      //   if(i == 0 ) obj.push({name: e, typeInput: 'hidden'})
+      //   else if(i !== (dataHide.length - 1) &&  i !== (dataHide.length - 2)) {
+      //     obj.push({name: e.split('_')[1], type: 'input'})
+      //   };
+        
+      // });
+      
+      // $('#modalMultiGuna').modal('show');
+      // modalGenerate('Add', obj , [{name: 'Add', class: 'btn-primary'}]);
+      let option = ambilOption();
+      let attr = ambilAttribute(0, 'hidden', '#tabelUtama > thead > tr');
+      attr = MixRowsAndAttrs(this, attr);
+      let modalBo = modalBody(attr, option);
+
+      modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary'}])
+      
     });
 
     // // Event saat
@@ -346,12 +401,11 @@ document.onreadystatechange = () => {
     // Argument ke 3 jika nilainya true maka modal nya akan ditoggle
     function tampilkanNama(user1, state, toggleee) {
       let namaUser = "";
+      
       $.each(user1, function (i, e) {
-        let nameOrTitle =
-          $(e).children(".tableName").text() == ""
-            ? $(e).children(".tableTitle").text()
-            : $(e).children(".tableName").text();
-        let user = state == 1 ? nameOrTitle : e;
+        let nameOrTitle = $(e).children("[data-identifier=true]").text();
+        let user = nameOrTitle.length >= 1 ? nameOrTitle : e;
+
         // Jika user1 lebih besar dari pada 5 maka
         if (user1.length > 5) {
           if (i === 1) namaUser += `${user}, ... ,`;
@@ -360,13 +414,27 @@ document.onreadystatechange = () => {
           namaUser += `${user}`;
           if (i < user1.length - 1) namaUser += ", ";
         }
+
       });
-      if (toggleee) $("#deleteModalBy").modal("toggle");
+      
+      const judul = $('#content > div > div.d-sm-flex.align-items-center.justify-content-between.mb-4 > h1').text();
+      let buttonFooter = $('#modalMultiGuna > div > div > div.modal-footer > button');
+      let text = `Are you sure you want to remove <strong>${namaUser}</strong> from ${judul} ?`;
+      if (user1.length <= 0 ) {
+        text = "Not found";
+        $.each(buttonFooter, (i,e) => {
+          if( i != 0 ) $(e).prop('disabled', true)
+        })
+      } else {
+        $.each(buttonFooter, (i,e) => {
+          if( i != 0 ) $(e).removeAttr('disabled')
+        })
+      }
       // Beri Peringatan kepada users
       $(
-        "#deleteModalBy div div.modal-content div.modal-body .form-group:last-child .alert"
+        `#modalMultiGuna > div > div > div.modal-body > div:nth-child(3) > div`
       ).html(
-        `Are you sure you want to remove <strong>${namaUser}</strong> from the library members ?`
+        text
       );
     }
 
@@ -379,9 +447,11 @@ document.onreadystatechange = () => {
       // Hapus baris yang terdapat dan kecilkan semua huruf
       search = hapusSpasi(search);
       let value = [];
+
       $.each(querySearch, function (i, e) {
-        if (hapusSpasi($(e).children(coloum).text()) == search)
-          value.push($(e).children(".tableName").text());
+        if (hapusSpasi($(e).children(coloum).text()) == search) {
+          value.push($(e).children("[data-identifier=true]").text());
+        }
       });
       return value;
     }
@@ -400,14 +470,57 @@ document.onreadystatechange = () => {
       return search2;
     }
 
-    function ambilAttribute(i) {
+    function ambilAttribute(i, where, ambil) {
+      where = where == undefined ? "hidden" : where ;
+      ambil = ambil == undefined ? '#tabelUtama > tbody tr[role=row]' : ambil;
       let test = {};
-      let tr = document.querySelectorAll("#tabelUtama > tbody tr[role=row]");
-      for (let j = 0; j < tr[i].attributes.length - 4; j++) {
-        let name = tr[i].attributes[j].nodeName.split("-")[1];
-        test[name] = tr[i].attributes[j].nodeValue;
-      }
+      let tr = document.querySelectorAll(ambil);
+      let data = tr[i].dataset[where];
+      let dataPotong = data.split('/-/');
+      dataPotong.forEach(function(e,i){
+        if(e.length > 0) {
+          let pecah = e.split("="); // THis is Value
+          
+          let ii = pecah.length - 1;
+          let pecah2 = pecah[ii].split('/');
+          let judul = pecah.length > 1 ? pecah[0] : pecah2[0];
+          let val = pecah2[1].length <= 1 ? '' : pecah2[1];
+          let textValue = pecah.length > 1 ? pecah2[0] : ''
+          
+          test[judul] = [val, textValue]
 
+          // if(pecah.length > 1) {
+          //   let pecah2 = pecah[1].split('/');
+          //   // Nilai As
+          //   let val = pecah2[1].length <= 1 ? '' : pecah2[1];
+          //   let judul = pecah[0];
+          //   // Nilai Value
+          //   let nilai = pecah2[0];
+          //   console.log(`Val : ${val}. Judul: ${judul}. Nilai: ${nilai}`)
+          // } else {
+          //   let pecah2 = pecah[0].split('/');
+          //   let judul = pecah2[0];
+          //   let val = pecah2[1].length <= 1 ? '' : pecah2[1];
+            
+          //   console.log(`Val : ${val}. Judul: ${judul}`)
+          // }
+
+          // let va = pecah.length - 1
+          // let pecah2 = pecah[va].split('/'); 
+          // let judul, value;
+          // judul = pecah[0];
+
+          
+          // if(pecah2.length > 1) {
+          //   if(pecah2[1].length > 0) value = [pecah2[1]]
+          //   else value = pecah.length <= 1 ? '' : pecah[1];
+          //   test[judul] = value
+          // }
+          
+        }
+        // else test[e] = '';
+      })
+      
       return test;
     }
 
@@ -444,42 +557,68 @@ document.onreadystatechange = () => {
       return hasilIndex;
     }
 
-    function MixRowsAndAttrs(el, obj) {
+    function MixRowsAndAttrs(el, obj, value) {
       let test = $(el).parent().prevAll();
       const thead = document.querySelector("#tabelUtama > thead");
       const tHeadChild = Array.from(thead.children[0].children);
-
+      
       $.each(tHeadChild, function (i, e) {
         let index = $(e).nextAll().length - 1;
-        if (i !== 0 && tHeadChild.length - 1 !== i)
-          obj[e.textContent] = test[index].textContent;
+        if (i !== 0 && tHeadChild.length - 1 !== i) {
+          let data = e.dataset.as;
+          let name = e.dataset.name;
+          
+          if (data != undefined) obj[name] = [data];
+          
+          if(value == true) nilai = test[index].textContent;
+          else nilai = '';
+
+          // Jika Array
+          if( typeof obj[name] == 'object' && obj[name] !== undefined ) obj[name].push(nilai);
+          else obj[name] = nilai
+          
+        }
+  
       });
+      
+      return obj
     }
 
     function modalBody(obj, arVal) {
       let result = [];
       const keyObj = Object.keys(obj);
       const valObj = Object.values(obj);
-      const option = ambilOption();
+      
       valObj.forEach(function (e, i) {
-        if (i !== 0) {
-          let rst = {};
-          rst.name = keyObj[i];
-          for(let opt in option) {
-              if(option[opt] == e) {
-                rst.value = ambilOption();
-                rst.type = "select";
-                result.push(rst);
-                return
-              } else {
-                rst.value = e;
-                rst.type = "input";
-              }           
-          }
-          result.push(rst);
-        }
-      });
+        if(keyObj[i] != 'updatedAt' && keyObj[i] !== 'createdAt') {
+          if(i == 0 && e[1].length <= 0) return
 
+
+          let result2 = {};
+          result2.name = ambilKata(keyObj[i], '_', 'all', [0]);
+          result2.realName = keyObj[i];
+          result2.value = e;
+          result2.type = i === 0  ? 'hidden' : 'input';
+          result2.id = true
+
+          if(typeof e == 'object') {
+            if(e[0] == 'group') {
+              result2.type = 'select';
+              result2.id = 'inputClass'
+              result2.value = arVal;
+              result2.name = ambilKata(keyObj[i], '_', 'all', [1]);
+            } else if(e[0] == 'image') { 
+              result2.typeInput = 'file'
+            } else {
+              result2.value = e[1]
+            }
+
+          }
+          result.push(result2)
+        }
+        
+      });
+      console.log(result)
       return result;
     }
 
@@ -487,10 +626,13 @@ document.onreadystatechange = () => {
       let li = document.querySelectorAll("#tabelUtama > tbody > tr");
       let inChild = Array.from(li[i].children);
       inChild.forEach(function (e, i) {
-        if (e.matches('[data-group=true]'))document.getElementById("inputClass").value = e.textContent;
+        if (e.matches("[data-group=true]")){
+          document.getElementById("inputClass").value = e.textContent;
+        }
       });
       return "success";
     }
+
 
     function modalGenerate(headerName, bodyComponent, footerComponent) {
       const header = document.getElementById(`multigunaHeader`);
@@ -513,17 +655,37 @@ document.onreadystatechange = () => {
           let input = e.typeInput == undefined ? "input" : e.typeInput;
           let place = e.place == undefined ? `Enter ${e.name}` : e.place;
           let value = e.value === undefined ? "" : e.value;
+          let classElement = e.class === undefined ? "" : e.class;
           place = value !== "" ? "" : place;
+      
+          if(e.id !== undefined) {
+            e.id = e.id === true ? `${e.name}` : e.id;
+            e.id = ubahHurufPertama(e.id, 'kecil');
+            let poto = e.id.split(' ');
 
-          html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`;
+            if(poto.length > 1) {
+              e.id = '';
+              poto.forEach(element => e.id += element );
+            } else e.id = poto[0]
+          } else e.id = ''
+
+          html += `<div class="form-group">`;
           if (e.type == "select") {
-            html += `<select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="inputClass"  aria-controls="dataTable" value="${value}">`;
-            e.value.forEach(
-              (e) => (html += `<option value="${e}">${e}</option>`)
-            );
+            html += `<label for="InputFullname">${e.name} : </label><select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="${e.id}"  aria-controls="dataTable" S>`;
+            if(e.value !== undefined) {
+              e.value.forEach((e) => {
+                let val = ambilKata(e, ' ', 2, []);
+                if( val.length <= 0 ) val = ambilKata(e, ' ', 'all', []);
+                 html += `<option value="${val.toLowerCase()}">${e}</option>`
+              })
+            }
             html += `</select>`;
-          } else
+          } else if (e.type == 'div') { 
+            html += `<div class="${classElement}"></div>`
+          } else {
+            if(e.type = 'input') html += `<label for="InputFullname">${e.name} : </label>`
             html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
+          }
 
           html += `</div>`;
 
@@ -540,5 +702,43 @@ document.onreadystatechange = () => {
       );
     }
     // Akir Event table
+
+    // Jadikan huruf pertama dari suatu kata menjadi besar
+    function ubahHurufPertama(word, mau) {
+      // Ambil Bagian nomor depan
+      let potongan = word.slice(0, 1);
+      // Ubah Jadi Huruf besar
+      potongan = mau === undefined ? potongan.toUpperCase() : potongan.toLowerCase() ;
+      // Potong dari 0 sampai akhir
+      word = word.slice(1);
+      // Gabungkan
+      potongan += word;
+      // Kirim Potongannya
+      return potongan;
+    }
+
+    // untuk menambil kata ke-berapa dari string
+    function ambilKata(word, pemisah, ambil, without) {
+      let word2 = word.split(pemisah);
+      let result = "";
+      word2.forEach(function (e, i) {
+        e = ubahHurufPertama(e);
+        // Jika argument ambil sama dengan number
+        if (typeof ambil == "number") {
+          if (i == ambil) result += e;
+        } else if (typeof ambil == "object") {
+          if (termasuk(ambil, i) == true) result += `${e} `;
+        } else if (typeof ambil == "string") {
+          if (word2.length > without.length) {
+            if (gaTermasuk(without, i) == true) result += `${e} `;
+          } else result += `${e} `;
+        }
+      });
+
+      result = result.trim();
+
+      return result;
+    }
+
   }
 };
