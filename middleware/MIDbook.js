@@ -33,6 +33,7 @@ module.exports = async function (req, res) {
         {i: 1, as: 'image'},
         {i: 2, as: 'identifier'},
         {i: 10, as: 'group'},
+        {i: 11, as: 'group'},
       ]
     };
     let hasilRender = renderWeb(arg);

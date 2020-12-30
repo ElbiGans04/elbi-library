@@ -162,7 +162,6 @@ document.onreadystatechange = () => {
 
       // Ambil Attribute bedasarkan coloumn yang diklik
       let obj = ambilAttribute(hasilIndex);
-
       // Gabungkan Baris dengan Attibute
       let newObj = MixRowsAndAttrs(this, obj, true);
 
@@ -324,33 +323,12 @@ document.onreadystatechange = () => {
     // Add Modal
     $(document).on('click', '#addMember', function(e){
       $('#modalMultiGuna').modal('show');
-      // let dataHide = $('#tabelUtama thead tr');
-      // dataHide = dataHide.data('hidden').split('/-/');
-      // dataHide.pop();
-      // let obj = [];
-      // $.each($('#tabelUtama thead tr').children(), function(i, e){
-      //   if(i !== 0 && i !== ($('#tabelUtama thead tr').children().length - 1)) {
-      //     dataHide.push($(e).text())
-      //   }
-      // });
-      // console.log(dataHide)
-      // dataHide.forEach(function(e,i){
-      //   if(i == 0 ) obj.push({name: e, typeInput: 'hidden'})
-      //   else if(i !== (dataHide.length - 1) &&  i !== (dataHide.length - 2)) {
-      //     obj.push({name: e.split('_')[1], type: 'input'})
-      //   };
-        
-      // });
-      
-      // $('#modalMultiGuna').modal('show');
-      // modalGenerate('Add', obj , [{name: 'Add', class: 'btn-primary'}]);
       let option = ambilOption();
       let attr = ambilAttribute(0, 'hidden', '#tabelUtama > thead > tr');
       let newAttr = MixRowsAndAttrs(this, attr);
       let modalBo = modalBody(newAttr, option);
 
       modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary'}])
-      
     });
 
     // // Event saat
@@ -541,7 +519,9 @@ document.onreadystatechange = () => {
           let data = e.dataset.as;
           let name = e.dataset.name;
           
-          if (data != undefined) newObj[name] = [data];
+          if (data != undefined) {
+            newObj[name] = [data]
+          };
           
           if(value == true) nilai = test[index].textContent;
           else nilai = '';
@@ -602,8 +582,10 @@ document.onreadystatechange = () => {
       let li = document.querySelectorAll("#tabelUtama > tbody > tr");
       let inChild = Array.from(li[i].children);
       inChild.forEach(function (e, i) {
-        if (e.matches("[data-group=true]")){
-          document.getElementById("inputClass").value = e.textContent;
+        if (e.matches("[data-as=group]")){
+          let val = ambilKata(e.textContent.toLowerCase(), ' ', 'all', [], true);
+          console.log(val)
+          document.getElementById("inputClass").value = val;
         }
       });
       return "success";
@@ -645,25 +627,24 @@ document.onreadystatechange = () => {
             } else e.id = poto[0]
           } else e.id = ''
 
-          html += `<div class="form-group">`;
           if (e.type == "select") {
+            html += `<div class="form-group">`;
             html += `<label for="InputFullname">${e.name} : </label><select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="${e.id}"  aria-controls="dataTable" S>`;
             if(e.value !== undefined) {
               e.value.forEach((e) => {
-                let val = ambilKata(e, ' ', 2, []);
-                if( val.length <= 0 ) val = ambilKata(e, ' ', 'all', []);
-                 html += `<option value="${val.toLowerCase()}">${e}</option>`
+                let val = ambilKata(e, ' ', 'all', [], true);
+                html += `<option value="${val.toLowerCase()}">${e}</option>`
               })
             }
-            html += `</select>`;
-          } else if (e.type == 'div') html += `<div class="${classElement}"></div>`
+            
+            html += `</select></div>`;
+          } else if (e.type == 'div') html += `<div class="form-group"><div class="${classElement}"></div></div>`
           else {
-            console.log(e.name, e.type)
-            if(e.type == 'input') html += `<label for="InputFullname">${e.name} : </label>`
+            if(e.type == 'input') html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`
             html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
+            if(e.type == 'input') html += `</div>`;
           }
 
-          html += `</div>`;
 
           // Saat Terakhir
           if (i == bodyComponent.length - 1) body.innerHTML = html;
@@ -694,21 +675,23 @@ document.onreadystatechange = () => {
     }
 
     // untuk menambil kata ke-berapa dari string
-    function ambilKata(word, pemisah, ambil, without) {
+    function ambilKata(word, pemisah, ambil, without, space) {
       let word2 = word.split(pemisah);
+      let ok = space == undefined ? '' : space;
       let result = "";
       word2.forEach(function (e, i) {
-        e = ubahHurufPertama(e);
+        e =  ok !== '' ? e : ubahHurufPertama(e);
         // Jika argument ambil sama dengan number
         if (typeof ambil == "number") {
           if (i == ambil) result += e;
         } else if (typeof ambil == "object") {
-          if (termasuk(ambil, i) == true) result += `${e} `;
+          if (termasuk(ambil, i) == true) result += `${e}`;
         } else if (typeof ambil == "string") {
           if (word2.length > without.length) {
-            if (gaTermasuk(without, i) == true) result += `${e} `;
-          } else result += `${e} `;
+            if (gaTermasuk(without, i) == true) result += `${e}`;
+          } else result += `${e}`;
         }
+        if(ok == '') result += ' '
       });
 
       result = result.trim();

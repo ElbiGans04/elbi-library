@@ -32,10 +32,11 @@ module.exports = async function (req, res) {
       },
       identitas : [
         {i: 2, as: 'identifier'},
+        {i: 7, as: 'group'},
         {i: 8, as: 'group'}
       ]
     };
-
+    
     let hasilRender = renderWeb(arg);
 
     if (test.as == "html") res.json({ html: hasilRender, data: result });

@@ -82,6 +82,7 @@ module.exports = function (data) {
         if(gaTermasuk(without, i) == true){
           const id = termasuk(identitas, i , 'i');
           const idd = id !== undefined ? `data-as="${id.value}"` : '';
+          
           const namaModel = coloumn[col].Model.name;
           e = col !== objKey[objKey.length - 1] ? ambilKata(col, "_", "all", [0]) : ambilKata(col, "_", "all", [1]);
           body += `<th data-model='${namaModel}' ${idd} data-name="${col}">${e}</th>`;
@@ -136,12 +137,12 @@ module.exports = function (data) {
   
         // Lopping additional
         result += looping(0, "", additional, "td", null);
+
         // Lopping Nilai coloumn pada baris
         for (let f in data[e].dataValues) {
           if (gaTermasuk(without, i) === true && i !== objProperti.length - 2) {
             const id = termasuk(identitas, i , 'i');
-            const idd = id !== undefined ? `data-${id.value}="true"` : '';
-            
+            const idd = id !== undefined ? `data-as="${id.value}"` : '';
 
             let classElement = f.split("_")[1];
             classElement = classElement == undefined || classElement == null ? f : classElement;
