@@ -331,45 +331,58 @@ document.onreadystatechange = () => {
       modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary'}])
     });
 
-    // // Event saat
-    // $('#modifyClass').on('click', function(event){
-    //   $('#modifyClassModal').modal('toggle');
-    //   console.log($(this).css('display', 'inline-block'))
-    // })
+    // Event saat
+    $(document).on('click', '#modifyClass', function(event){
+      $('#modalMultiGuna').modal('toggle');
+      const name = this.textContent;
+
+      // Modal Generate
+      modalGenerate(name, [
+        {name: 'Action',type: 'select', value: ['add', 'update', 'delete'], id: 'modifyAction'},
+        { name: `Add` , type: 'input', id: true},
+        {name: 'Class', type: 'select', value: ambilOption(), id: 'inputModalClass' , class: 'd-none'},
+        {type: 'div' , class2 : 'alert alert-danger' , class: 'd-none'}
+      ], [
+        { name: 'Apply', class: 'btn-primary' }
+      ])
+    })
 
     // Event change untuk input yang ada diModify Class
-    $("#modifyAction").on("change", function (event) {
+    $(document).on("change", '#modifyAction' ,function (event) {
       let value = $(this).val();
-      let modalBody = $("#modifyClassModal .modal-body");
+      let modalBody = $("#modalMultiGuna .modal-body");
 
+      let nextAll = $(this).parent().nextAll();
+      let formPolos = nextAll[0];
+      let classEle = nextAll[1];
+      let alert = nextAll[2];
+
+      console.log($(this).parent())
+
+      $(nextAll).addClass('d-none')
       // Jika nilainya add
-      if (value === "Add") {
-        $(modalBody).children(".modifyAddClass").removeClass("d-none");
-        $(modalBody).children(".modifyClass").addClass("d-none");
-        $(modalBody)
-          .children(".modifyAddClass")
-          .children("label")
-          .html("Add Class :");
+      if (value === "add") {
+        $(formPolos).removeClass('d-none');
+        let anak = $(formPolos).children()
+        $(anak).first().text('add : ')
+        $(anak).last().attr('placeholder', 'add class')
       }
       // Jika nilai nya delete
-      if (value === "Delete") {
-        $(modalBody).children(".modifyAddClass").addClass("d-none");
-        $(modalBody).children(".modifyClass").removeClass("d-none");
+      if (value === "delete") {
+        $(alert).removeClass('d-none');
+        $(alert).children().first().html(`Are you sure to remove <strong>${$(classEle).children().last().val()}</strong>?`);
+        $(classEle).removeClass('d-none');
       }
-
+      
       // Jika nilainya update
-      if (value === "Update") {
-        $(modalBody).children(".modifyAddClass").removeClass("d-none");
-        $(modalBody).children(".modifyClass").removeClass("d-none");
-        $(modalBody)
-          .children(".modifyAddClass")
-          .children("label")
-          .html("Update Class :");
+      if (value === "update") {
+        $(formPolos).removeClass('d-none');
+        let anak = $(formPolos).children()
+        $(anak).first().text('update : ')
+        $(anak).last().attr('placeholder', 'enter update')
+        $(classEle).removeClass('d-none');
       }
 
-      $("#modifyClassModal .modal-footer button:last-child").html(
-        `${value} class`
-      );
     });
 
     // Fungsi Utama adalah untuk mengambil nama dari kelas yang aktif
@@ -614,6 +627,7 @@ document.onreadystatechange = () => {
           let place = e.place == undefined ? `Enter ${e.name}` : e.place;
           let value = e.value === undefined ? "" : e.value;
           let classElement = e.class === undefined ? "" : e.class;
+          let classElement2 = e.class2 === undefined ? "" : e.class2;
           place = value !== "" ? "" : place;
       
           if(e.id !== undefined) {
@@ -628,8 +642,8 @@ document.onreadystatechange = () => {
           } else e.id = ''
 
           if (e.type == "select") {
-            html += `<div class="form-group">`;
-            html += `<label for="InputFullname">${e.name} : </label><select class="custom-select custom-select-sm form-control form-control-sm mb-2" id="${e.id}"  aria-controls="dataTable" S>`;
+            html += `<div class="form-group ${classElement}">`;
+            html += `<label for="InputFullname">${e.name} : </label><select class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
             if(e.value !== undefined) {
               e.value.forEach((e) => {
                 let val = ambilKata(e, ' ', 'all', [], true);
@@ -638,9 +652,9 @@ document.onreadystatechange = () => {
             }
             
             html += `</select></div>`;
-          } else if (e.type == 'div') html += `<div class="form-group"><div class="${classElement}"></div></div>`
+          } else if (e.type == 'div') html += `<div class="form-group ${classElement}"><div class="${classElement2}"></div></div>`
           else {
-            if(e.type == 'input') html += `<div class="form-group"><label for="InputFullname">${e.name} : </label>`
+            if(e.type == 'input') html += `<div class="form-group ${classElement}"><label for="InputFullname">${e.name} : </label>`
             html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
             if(e.type == 'input') html += `</div>`;
           }
