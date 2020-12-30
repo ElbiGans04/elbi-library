@@ -164,10 +164,10 @@ document.onreadystatechange = () => {
       let obj = ambilAttribute(hasilIndex);
 
       // Gabungkan Baris dengan Attibute
-      MixRowsAndAttrs(this, obj, true);
+      let newObj = MixRowsAndAttrs(this, obj, true);
 
       // generate modal Body with type
-      const result = modalBody(obj, arVal);
+      const result = modalBody(newObj, arVal);
       
       // Panggil Fungsi Modal-generate
       modalGenerate("Update", result, [
@@ -346,8 +346,8 @@ document.onreadystatechange = () => {
       // modalGenerate('Add', obj , [{name: 'Add', class: 'btn-primary'}]);
       let option = ambilOption();
       let attr = ambilAttribute(0, 'hidden', '#tabelUtama > thead > tr');
-      attr = MixRowsAndAttrs(this, attr);
-      let modalBo = modalBody(attr, option);
+      let newAttr = MixRowsAndAttrs(this, attr);
+      let modalBo = modalBody(newAttr, option);
 
       modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary'}])
       
@@ -488,37 +488,9 @@ document.onreadystatechange = () => {
           let textValue = pecah.length > 1 ? pecah2[0] : ''
           
           test[judul] = [val, textValue]
-
-          // if(pecah.length > 1) {
-          //   let pecah2 = pecah[1].split('/');
-          //   // Nilai As
-          //   let val = pecah2[1].length <= 1 ? '' : pecah2[1];
-          //   let judul = pecah[0];
-          //   // Nilai Value
-          //   let nilai = pecah2[0];
-          //   console.log(`Val : ${val}. Judul: ${judul}. Nilai: ${nilai}`)
-          // } else {
-          //   let pecah2 = pecah[0].split('/');
-          //   let judul = pecah2[0];
-          //   let val = pecah2[1].length <= 1 ? '' : pecah2[1];
-            
-          //   console.log(`Val : ${val}. Judul: ${judul}`)
-          // }
-
-          // let va = pecah.length - 1
-          // let pecah2 = pecah[va].split('/'); 
-          // let judul, value;
-          // judul = pecah[0];
-
-          
-          // if(pecah2.length > 1) {
-          //   if(pecah2[1].length > 0) value = [pecah2[1]]
-          //   else value = pecah.length <= 1 ? '' : pecah[1];
-          //   test[judul] = value
-          // }
+    
           
         }
-        // else test[e] = '';
       })
       
       return test;
@@ -561,6 +533,7 @@ document.onreadystatechange = () => {
       let test = $(el).parent().prevAll();
       const thead = document.querySelector("#tabelUtama > thead");
       const tHeadChild = Array.from(thead.children[0].children);
+      let newObj = {};
       
       $.each(tHeadChild, function (i, e) {
         let index = $(e).nextAll().length - 1;
@@ -568,38 +541,39 @@ document.onreadystatechange = () => {
           let data = e.dataset.as;
           let name = e.dataset.name;
           
-          if (data != undefined) obj[name] = [data];
+          if (data != undefined) newObj[name] = [data];
           
           if(value == true) nilai = test[index].textContent;
           else nilai = '';
 
           // Jika Array
-          if( typeof obj[name] == 'object' && obj[name] !== undefined ) obj[name].push(nilai);
-          else obj[name] = nilai
+          if( typeof newObj[name] == 'object' && newObj[name] !== undefined ) newObj[name].push(nilai);
+          else newObj[name] = nilai
           
         }
   
       });
       
-      return obj
+      let mix = {...obj, ...newObj};
+      return mix
     }
 
     function modalBody(obj, arVal) {
-      let result = [];
-      const keyObj = Object.keys(obj);
-      const valObj = Object.values(obj);
+      let result = new Array;
+      let keyObj = Object.keys(obj);
+      let valObj = Object.values(obj);
       
       valObj.forEach(function (e, i) {
         if(keyObj[i] != 'updatedAt' && keyObj[i] !== 'createdAt') {
           if(i == 0 && e[1].length <= 0) return
-
-
           let result2 = {};
+          
+          
           result2.name = ambilKata(keyObj[i], '_', 'all', [0]);
           result2.realName = keyObj[i];
-          result2.value = e;
-          result2.type = i === 0  ? 'hidden' : 'input';
-          result2.id = true
+          result2.value = e[0] == 'group' ? arVal : e;
+          result2.type = `input`;
+          result2.id = true;
 
           if(typeof e == 'object') {
             if(e[0] == 'group') {
@@ -607,18 +581,20 @@ document.onreadystatechange = () => {
               result2.id = 'inputClass'
               result2.value = arVal;
               result2.name = ambilKata(keyObj[i], '_', 'all', [1]);
-            } else if(e[0] == 'image') { 
-              result2.typeInput = 'file'
-            } else {
-              result2.value = e[1]
-            }
 
+            } else if(e[0] == 'image') result2.typeInput = 'file'
+            else {
+              result2.typeInput = i == 0 ? 'hidden' : 'input';
+              result2.type = i == 0 ? 'ff' : 'input';
+              result2.value = e[1];
+            }
           }
+
+          // Masukan 
           result.push(result2)
         }
         
       });
-      console.log(result)
       return result;
     }
 
@@ -648,8 +624,8 @@ document.onreadystatechange = () => {
 
       body.innerHTML = "";
       let html = "";
-      if (bodyComponent.tunggal != undefined)
-        body.innerHTML = `<div>${bodyComponent.tunggal}</div>`;
+
+      if (bodyComponent.tunggal != undefined) body.innerHTML = `<div>${bodyComponent.tunggal}</div>`;
       else {
         bodyComponent.forEach((e, i) => {
           let input = e.typeInput == undefined ? "input" : e.typeInput;
@@ -680,10 +656,10 @@ document.onreadystatechange = () => {
               })
             }
             html += `</select>`;
-          } else if (e.type == 'div') { 
-            html += `<div class="${classElement}"></div>`
-          } else {
-            if(e.type = 'input') html += `<label for="InputFullname">${e.name} : </label>`
+          } else if (e.type == 'div') html += `<div class="${classElement}"></div>`
+          else {
+            console.log(e.name, e.type)
+            if(e.type == 'input') html += `<label for="InputFullname">${e.name} : </label>`
             html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
           }
 
