@@ -182,7 +182,7 @@ document.onreadystatechange = () => {
 
     //  Event Klik Untuk Tombol Action Delete
     $(document).on("click", "button.delete", function (e) {
-      let user = $(this).parent().prevAll("[data-identifier=true]").text();
+      let user = $(this).parent().prevAll("[data-as=identifier]").text();
       const judul = $(
         "#content > div > div.d-sm-flex.align-items-center.justify-content-between.mb-4 > h1"
       )
@@ -250,9 +250,10 @@ document.onreadystatechange = () => {
       // let coloumName = $("table#tabelUtama > tbody > tr.active");
       let searchByColoum = cariBaris(
         "#tabelUtama tbody tr",
-        "[data-group=true]",
+        "[data-as=group]",
         option[0]
       );
+
 
       let group = $(`#modalMultiGuna > div > div > div.modal-body > div:nth-child(2)`);
       const optionELement = $('#deleteBy option');
@@ -307,7 +308,7 @@ document.onreadystatechange = () => {
       const nilai = $(this).val().toLowerCase();
       let value = cariBaris(
         "#tabelUtama tbody tr",
-        "[data-group=true]",
+        "[data-as=group]",
         nilai
       );
       tampilkanNama(value, 2, false);
@@ -436,14 +437,16 @@ document.onreadystatechange = () => {
     function cariBaris(querySearch, coloum, search) {
       querySearch = $(querySearch);
       // Hapus baris yang terdapat dan kecilkan semua huruf
-      search = hapusSpasi(search);
+      search = ambilKata(search, ' ', {space: false, uppercase: false}); // Nature
       let value = [];
-
+      
       $.each(querySearch, function (i, e) {
-        if (hapusSpasi($(e).children(coloum).text()) == search) {
-          value.push($(e).children("[data-identifier=true]").text());
+        let kata = ambilKata($(e).children(coloum).text(), ' ', {space: false, uppercase: false});
+        if ( kata == search) {
+          value.push($(e).children("[data-as=identifier]").text());
         }
       });
+
       return value;
     }
 
@@ -452,13 +455,6 @@ document.onreadystatechange = () => {
       if (state)
         $(".disableButton").prop("disabled", true).css("cursor", "not-allowed");
       else $(".disableButton").removeAttr("style").removeAttr("disabled");
-    }
-
-    function hapusSpasi(word) {
-      word = word.split(" ");
-      let search2 = "";
-      word.forEach((e) => (search2 += e.toLowerCase()));
-      return search2;
     }
 
     function ambilAttribute(i, where, ambil) {
@@ -499,6 +495,16 @@ document.onreadystatechange = () => {
         }
       } else return true;
     }
+
+    function termasuk(withValue, i, el) {
+      for (let j in withValue) {
+        const kon = el === undefined ? withValue[j]  : withValue[j][el];
+        if ( kon === i) {
+          if(el != undefined) return { value: withValue[j]['as'], kondisi: true }
+          else return true;
+        }
+      }
+    };
 
     function ambilOption() {
       // Ambil Option
@@ -561,8 +567,7 @@ document.onreadystatechange = () => {
           if(i == 0 && e[1].length <= 0) return
           let result2 = {};
           
-          
-          result2.name = ambilKata(keyObj[i], '_', 'all', [0]);
+          result2.name = ambilKata(keyObj[i], '_', {without: [0]})
           result2.realName = keyObj[i];
           result2.value = e[0] == 'group' ? arVal : e;
           result2.type = `input`;
@@ -573,7 +578,7 @@ document.onreadystatechange = () => {
               result2.type = 'select';
               result2.id = 'inputClass'
               result2.value = arVal;
-              result2.name = ambilKata(keyObj[i], '_', 'all', [1]);
+              result2.name = ambilKata(keyObj[i], '_', {without : [1]});
 
             } else if(e[0] == 'image') result2.typeInput = 'file'
             else {
@@ -596,8 +601,7 @@ document.onreadystatechange = () => {
       let inChild = Array.from(li[i].children);
       inChild.forEach(function (e, i) {
         if (e.matches("[data-as=group]")){
-          let val = ambilKata(e.textContent.toLowerCase(), ' ', 'all', [], true);
-          console.log(val)
+          let val = ambilKata(e.textContent, ' ' , {space: false, uppercase: false});
           document.getElementById("inputClass").value = val;
         }
       });
@@ -646,7 +650,7 @@ document.onreadystatechange = () => {
             html += `<label for="InputFullname">${e.name} : </label><select class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
             if(e.value !== undefined) {
               e.value.forEach((e) => {
-                let val = ambilKata(e, ' ', 'all', [], true);
+                let val = ambilKata(e, ' ', {space: false});
                 html += `<option value="${val.toLowerCase()}">${e}</option>`
               })
             }
@@ -689,12 +693,21 @@ document.onreadystatechange = () => {
     }
 
     // untuk menambil kata ke-berapa dari string
-    function ambilKata(word, pemisah, ambil, without, space) {
+    function ambilKata(word, pemisah, option) {
       let word2 = word.split(pemisah);
-      let ok = space == undefined ? '' : space;
       let result = "";
+      
+      // Destructuring 
+     	let {ambil, space, without, uppercase} = option;
+      space = space == undefined ? true : space;
+      uppercase = uppercase == undefined ?  true : uppercase;
+      ambil = ambil == undefined ? 'all' : ambil;
+      without = without == undefined ? [] : without;
+      
+      // Looping
       word2.forEach(function (e, i) {
-        e =  ok !== '' ? e : ubahHurufPertama(e);
+        e =  uppercase == true ? ubahHurufPertama(e) : e;
+        e = uppercase == false ? e.toLowerCase() : e;
         // Jika argument ambil sama dengan number
         if (typeof ambil == "number") {
           if (i == ambil) result += e;
@@ -705,11 +718,11 @@ document.onreadystatechange = () => {
             if (gaTermasuk(without, i) == true) result += `${e}`;
           } else result += `${e}`;
         }
-        if(ok == '') result += ' '
+        if(space) result += ' '
       });
-
+      
       result = result.trim();
-
+ 
       return result;
     }
 
