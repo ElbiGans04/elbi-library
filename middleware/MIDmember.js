@@ -12,6 +12,7 @@ module.exports = async function (req, res) {
     let arg = {
       category: await tabelClass.findAll({raw: true}),
       without: [0, 5,6],
+      coloumnAttr: [0,5,6],
       coloumn: await tabelMember.rawAttributes,
       additional: [[null], [ "Action"]],
       mix: { yes: true, data: result.data },

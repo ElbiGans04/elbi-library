@@ -162,17 +162,20 @@ document.onreadystatechange = () => {
 
       // Ambil Attribute bedasarkan coloumn yang diklik
       let obj = ambilAttribute(hasilIndex);
+
       // Gabungkan Baris dengan Attibute
       let newObj = MixRowsAndAttrs(this, obj, true);
 
+
       // generate modal Body with type
       const result = modalBody(newObj, arVal);
-      
+      console.log(result)
       // Panggil Fungsi Modal-generate
       modalGenerate("Update", result, [
         {
           class: "btn-primary",
           name: "update",
+          id: 'actionButtonModal'
         },
       ]);
 
@@ -194,7 +197,7 @@ document.onreadystatechange = () => {
         {
           tunggal: `Are you sure you want to remove <strong>${user}</strong> from ${judul} ?`,
         },
-        [{ class: "btn-danger", name: "delete" }]
+        [{ class: "btn-danger", name: "delete", id: 'actionButtonModal' }]
       );
     });
 
@@ -329,7 +332,7 @@ document.onreadystatechange = () => {
       let newAttr = MixRowsAndAttrs(this, attr);
       let modalBo = modalBody(newAttr, option);
 
-      modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary'}])
+      modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary', id: 'actionButtonModal'}])
     });
 
     // Event saat
@@ -344,7 +347,7 @@ document.onreadystatechange = () => {
         {name: 'Class', type: 'select', value: ambilOption(), id: 'inputModalClass' , class: 'd-none'},
         {type: 'div' , class2 : 'alert alert-danger' , class: 'd-none'}
       ], [
-        { name: 'Apply', class: 'btn-primary' }
+        { name: 'Apply', class: 'btn-primary', id: 'actionButtonModal' }
       ])
     })
 
@@ -357,8 +360,6 @@ document.onreadystatechange = () => {
       let formPolos = nextAll[0];
       let classEle = nextAll[1];
       let alert = nextAll[2];
-
-      console.log($(this).parent())
 
       $(nextAll).addClass('d-none')
       // Jika nilainya add
@@ -385,6 +386,60 @@ document.onreadystatechange = () => {
       }
 
     });
+
+    $(document).on('click', '#actionButtonModal' , function(event){
+      let element = $(this).parent().prev().children();
+      let liActive = document.querySelector('#accordionSidebar > li.nav-item.active').children[0].getAttribute('href');
+      let result = new FormData();
+      let method = 'POST';
+      $.each(element, function(i, e){
+        let value, name;
+        if(e.classList.contains('form-group')) {
+          let anak = $(e).children('input').length <= 0 ? $(e).children('select') : $(e).children('input');
+          
+          if($(anak).attr('type') == 'file' ) {
+            if(anak[0].files[0] !== undefined) {
+              name = 'gambar';
+              value = anak[0].files[0];
+            } else return
+          } else {
+            name = anak[0].name;
+            value = anak[0].value
+          };
+          console.log(name)
+
+        } else {
+          method = 'PUT';
+          value = e.value;
+          name = e.name;
+        };
+
+        result.append(name, value)
+      });
+
+      // Melakukan request ke-Api
+      fetch(liActive, {
+        method: method,
+        body: result
+      }).then(result => {
+        if(result.ok == true && result.status == 201) return result.text()
+        else return result.statusText
+      }).then(result => {
+        alert(result);
+        // location.reload();
+      }).catch(err => console.log(err))
+      
+
+
+    });
+
+    $(document).on('change', '#InputImage', function(event){
+      const read = new FileReader();
+      read.readAsDataURL(this.files[0]);
+      read.onload = () => {
+        $(this).prev().attr('src', read.result)
+      }
+    })
 
     // Fungsi Utama adalah untuk mengambil nama dari kelas yang aktif
     // Menerima 3 argument yaitu
@@ -442,9 +497,7 @@ document.onreadystatechange = () => {
       
       $.each(querySearch, function (i, e) {
         let kata = ambilKata($(e).children(coloum).text(), ' ', {space: false, uppercase: false});
-        if ( kata == search) {
-          value.push($(e).children("[data-as=identifier]").text());
-        }
+        if ( kata == search) value.push($(e).children("[data-as=identifier]").text());
       });
 
       return value;
@@ -466,22 +519,41 @@ document.onreadystatechange = () => {
       let dataPotong = data.split('/-/');
       dataPotong.forEach(function(e,i){
         if(e.length > 0) {
+          //    /-/key=value=/type/-/ == id/
           let pecah = e.split("="); // THis is Value
           
+          // [0]name [1]fael [2]/identifer
           let ii = pecah.length - 1;
+
+          // Bagian Type. Contoh: /identifer
           let pecah2 = pecah[ii].split('/');
+          // [0] / [1] identifer
           let judul = pecah.length > 1 ? pecah[0] : pecah2[0];
           let val = pecah2[1].length <= 1 ? '' : pecah2[1];
-          let textValue = pecah.length > 1 ? pecah2[0] : ''
+          let textValue;
+          // let textValue = pecah.length > 1 ? pecah2[0] : '';
+          if (pecah.length > 1) {
+            textValue = pecah.length > 2 ? pecah[0] : pecah2[0];
+          } else textValue = ''
+          // textValue = pecah.length > 2 ? pecah[1] : pecah2[0]
+
           
-          test[judul] = [val, textValue]
-    
-          
+          test[judul] = [val, textValue];
         }
-      })
+      });
       
       return test;
     }
+
+    function _base64ToArrayBuffer(base64) {
+      var binary_string = window.atob(base64);
+      var len = binary_string.length;
+      var bytes = new Uint8Array(len);
+      for (var i = 0; i < len; i++) {
+          bytes[i] = binary_string.charCodeAt(i);
+      }
+      return bytes.buffer;
+  }
 
     function gaTermasuk(dont, value) {
       let i = 0;
@@ -538,12 +610,13 @@ document.onreadystatechange = () => {
           let data = e.dataset.as;
           let name = e.dataset.name;
           
-          if (data != undefined) {
-            newObj[name] = [data]
-          };
+          if (data != undefined) newObj[name] = [data]
+
           
-          if(value == true) nilai = test[index].textContent;
-          else nilai = '';
+          if(value == true) {
+            if(test[index].children[0] !== undefined) nilai = test[index].children[0].getAttribute('src')
+            else nilai = test[index].textContent;
+          } else nilai = '';
 
           // Jika Array
           if( typeof newObj[name] == 'object' && newObj[name] !== undefined ) newObj[name].push(nilai);
@@ -580,8 +653,11 @@ document.onreadystatechange = () => {
               result2.value = arVal;
               result2.name = ambilKata(keyObj[i], '_', {without : [1]});
 
-            } else if(e[0] == 'image') result2.typeInput = 'file'
-            else {
+            } else if(e[0] == 'image') {
+              result2.typeInput = 'file'
+              result2.src = e[1];
+              delete result2.value
+            } else {
               result2.typeInput = i == 0 ? 'hidden' : 'input';
               result2.type = i == 0 ? 'ff' : 'input';
               result2.value = e[1];
@@ -601,12 +677,12 @@ document.onreadystatechange = () => {
       let inChild = Array.from(li[i].children);
       inChild.forEach(function (e, i) {
         if (e.matches("[data-as=group]")){
-          let val = ambilKata(e.textContent, ' ' , {space: false, uppercase: false});
+          let val = ambilKata(e.textContent, ' ' , {space: false, uppercase: false, ganti: '_'});
           document.getElementById("inputClass").value = val;
         }
       });
       return "success";
-    }
+    };
 
 
     function modalGenerate(headerName, bodyComponent, footerComponent) {
@@ -647,10 +723,10 @@ document.onreadystatechange = () => {
 
           if (e.type == "select") {
             html += `<div class="form-group ${classElement}">`;
-            html += `<label for="InputFullname">${e.name} : </label><select class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
+            html += `<label for="InputFullname">${e.name} : </label><select name="${e.realName}" class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
             if(e.value !== undefined) {
               e.value.forEach((e) => {
-                let val = ambilKata(e, ' ', {space: false});
+                let val = ambilKata(e, ' ', {space: false, ganti: '_'});
                 html += `<option value="${val.toLowerCase()}">${e}</option>`
               })
             }
@@ -659,7 +735,8 @@ document.onreadystatechange = () => {
           } else if (e.type == 'div') html += `<div class="form-group ${classElement}"><div class="${classElement2}"></div></div>`
           else {
             if(e.type == 'input') html += `<div class="form-group ${classElement}"><label for="InputFullname">${e.name} : </label>`
-            html += `<input class="form-control" id="Input${e.name}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
+            if(e.src) html += `<img src="${e.src}" class="img-thumbnail">`
+            html += `<input class="form-control" id="Input${e.name}" name="${e.realName}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
             if(e.type == 'input') html += `</div>`;
           }
 
@@ -673,7 +750,7 @@ document.onreadystatechange = () => {
       footer.innerHTML = `<button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>`;
       footerComponent.forEach(
         (e) =>
-          (footer.innerHTML += `<button class="btn ${e.class}" type="button" >${e.name}</button>`)
+          (footer.innerHTML += `<button class="btn ${e.class}" type="button" id="${e.id}" >${e.name}</button>`)
       );
     }
     // Akir Event table
@@ -698,7 +775,7 @@ document.onreadystatechange = () => {
       let result = "";
       
       // Destructuring 
-     	let {ambil, space, without, uppercase} = option;
+     	let {ambil, space, without, uppercase, ganti} = option;
       space = space == undefined ? true : space;
       uppercase = uppercase == undefined ?  true : uppercase;
       ambil = ambil == undefined ? 'all' : ambil;
@@ -718,7 +795,8 @@ document.onreadystatechange = () => {
             if (gaTermasuk(without, i) == true) result += `${e}`;
           } else result += `${e}`;
         }
-        if(space) result += ' '
+        if(space && ganti === undefined ) result += ' '
+        else if (ganti != undefined && i != (word2.length - 1)) result += ganti
       });
       
       result = result.trim();

@@ -11,7 +11,8 @@ module.exports = async function (req, res) {
     // Argument Untuk Membuat body
     let arg = {
       category: await tabelCategory.findAll({raw: true}),
-      without: [0, 1, 5, 6, 7, 8, 9],
+      without: [0,2, 6, 7, 8, 9, 10],
+      coloumnAttr: [0, 6, 7, 8, 9, 10],
       coloumn: await tabelBook.rawAttributes,
       additional: [[null], ["Action"]],
       mix: { yes: true, data: result.data },
@@ -31,9 +32,9 @@ module.exports = async function (req, res) {
         },
       },identitas : [
         {i: 1, as: 'image'},
-        {i: 2, as: 'identifier'},
-        {i: 10, as: 'group'},
+        {i: 3, as: 'identifier'},
         {i: 11, as: 'group'},
+        {i: 12, as: 'group'},
       ]
     };
     let hasilRender = renderWeb(arg);

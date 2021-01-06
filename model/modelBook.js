@@ -6,6 +6,7 @@ module.exports = function(sequelize, Datatype) {
             primaryKey: true
         },
         book_image: Datatype.BLOB('long'),
+        book_image_type: Datatype.STRING,
         book_title : Datatype.STRING,
         book_launching: Datatype.STRING,
         book_author: Datatype.STRING,
