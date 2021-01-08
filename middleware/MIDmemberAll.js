@@ -1,4 +1,5 @@
 const tabel = require("../model/modelIndex");
+const url = require('url');
 
 let obj = {};
 obj.post = async (req, res) => {
@@ -26,7 +27,6 @@ obj.post = async (req, res) => {
 
 obj.put = async function(req,res){
   try {
-    const tabel = require("../model/modelIndex");
     const { tabelClass, Op, tabelMember } = await tabel();
 
     // Check apakah ada user dengan id tsb
@@ -52,6 +52,22 @@ obj.put = async function(req,res){
     res.statusCode(500).send(err)
   }
 
+};
+
+obj.delete = async function(req, res) {
+  let link = url.parse(req.url, true).query;
+  const { tabelClass, Op, tabelMember } = await tabel();
+
+  // Validation
+  let u = await tabelMember.findAll({where: {id: link.i}})
+  if(u.length <= 0) return res.sendStatus(404);
+
+  // Lakukan 
+  await tabelMember.destroy({where: {
+    id: link.i
+  }});
+
+  res.sendStatus(200)
 }
 
 

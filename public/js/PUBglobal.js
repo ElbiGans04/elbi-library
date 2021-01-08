@@ -155,10 +155,10 @@ document.onreadystatechange = () => {
       $("#modalMultiGuna").modal("toggle");
 
       // ambil Option
-      let arVal = ambilOption();
+      let arVal = ambilOption().val;
 
       // Dapatkan Index Li
-      let hasilIndex = ambilIndexLi(this);
+      let hasilIndex = ambilIndexLi(this, {});
 
       // Ambil Attribute bedasarkan coloumn yang diklik
       let obj = ambilAttribute(hasilIndex);
@@ -169,7 +169,7 @@ document.onreadystatechange = () => {
 
       // generate modal Body with type
       const result = modalBody(newObj, arVal);
-      console.log(result)
+  
       // Panggil Fungsi Modal-generate
       modalGenerate("Update", result, [
         {
@@ -186,6 +186,7 @@ document.onreadystatechange = () => {
     //  Event Klik Untuk Tombol Action Delete
     $(document).on("click", "button.delete", function (e) {
       let user = $(this).parent().prevAll("[data-as=identifier]").text();
+      let idx = ambilIndexLi(this, {})
       const judul = $(
         "#content > div > div.d-sm-flex.align-items-center.justify-content-between.mb-4 > h1"
       )
@@ -197,7 +198,7 @@ document.onreadystatechange = () => {
         {
           tunggal: `Are you sure you want to remove <strong>${user}</strong> from ${judul} ?`,
         },
-        [{ class: "btn-danger", name: "delete", id: 'actionButtonModal' }]
+        [{ class: "btn-danger", name: "delete", id: 'deleteButtonModal', data: `data-index="${idx}"` }]
       );
     });
 
@@ -241,11 +242,12 @@ document.onreadystatechange = () => {
             value: ["Delete by Class", "Delete by selected row"],
             type: "select",
             id: true,
+            class: 'rows-or-class'
           },
-          { name: "Class", value: option, type: "select", id: "deleteByClass" },
+          { name: "Class", value: option.val , data: option.data, type: "select", id: "deleteByClass", class: 'class' },
           {type: 'div' , class: 'alert alert-danger'}
         ],
-        [{ class: "btn-danger", name: "DELETE" }]
+        [{ class: "btn-danger", name: "DELETE", id: 'deleteByButtonModal' }]
       );
 
       let rowActive = $("table#tabelUtama > tbody > tr.active");
@@ -254,7 +256,7 @@ document.onreadystatechange = () => {
       let searchByColoum = cariBaris(
         "#tabelUtama tbody tr",
         "[data-as=group]",
-        option[0]
+        option.val[0]
       );
 
 
@@ -295,7 +297,7 @@ document.onreadystatechange = () => {
       
       // Jika Nilainya Class
       if (value == "Class") {
-        const option = ambilOption();
+        const option = ambilOption().val;
         let searchByColoum = cariBaris(
           "#tabelUtama tbody tr",
           "[data-group=true]",
@@ -308,12 +310,13 @@ document.onreadystatechange = () => {
 
     // Event change untuk input class dideleteByModal
     $(document).on("change", "#deleteByClass", function (e) {
-      const nilai = $(this).val().toLowerCase();
+      const nilai = ambilKata($(this).val(), '_', {uppercase: false, space: false});
       let value = cariBaris(
         "#tabelUtama tbody tr",
         "[data-as=group]",
-        nilai
+        ambilKata(nilai, '_', {space: false, uppercase: false})
       );
+    
       tampilkanNama(value, 2, false);
     });
 
@@ -327,7 +330,7 @@ document.onreadystatechange = () => {
     // Add Modal
     $(document).on('click', '#addMember', function(e){
       $('#modalMultiGuna').modal('show');
-      let option = ambilOption();
+      let option = ambilOption().val;
       let attr = ambilAttribute(0, 'hidden', '#tabelUtama > thead > tr');
       let newAttr = MixRowsAndAttrs(this, attr);
       let modalBo = modalBody(newAttr, option);
@@ -339,15 +342,16 @@ document.onreadystatechange = () => {
     $(document).on('click', '#modifyClass', function(event){
       $('#modalMultiGuna').modal('toggle');
       const name = this.textContent;
+      const test = ambilOption();
 
       // Modal Generate
       modalGenerate(name, [
-        {name: 'Action',type: 'select', value: ['add', 'update', 'delete'], id: 'modifyAction'},
-        { name: `Add` , type: 'input', id: true},
-        {name: 'Class', type: 'select', value: ambilOption(), id: 'inputModalClass' , class: 'd-none'},
+        {name: 'Action',type: 'select', value: ['add', 'update', 'delete'], id: 'modifyAction', class: 'action-element'},
+        { name: `Add` , type: 'input', id: true , class: 'form-element'},
+        {name: 'Class', type: 'select', value: test.val, id: 'inputModalClass', data: test.data, class: 'class-element d-none'},
         {type: 'div' , class2 : 'alert alert-danger' , class: 'd-none'}
       ], [
-        { name: 'Apply', class: 'btn-primary', id: 'actionButtonModal' }
+        { name: 'Apply', class: 'btn-primary', id: 'actionClassButton' }
       ])
     })
 
@@ -406,7 +410,6 @@ document.onreadystatechange = () => {
             name = anak[0].name;
             value = anak[0].value
           };
-          console.log(name)
 
         } else {
           method = 'PUT';
@@ -422,24 +425,126 @@ document.onreadystatechange = () => {
         method: method,
         body: result
       }).then(result => {
-        if(result.ok == true && result.status == 201) return result.text()
+        if(result.ok == true ) return result.text()
         else return result.statusText
       }).then(result => {
         alert(result);
-        // location.reload();
+        location.reload();
       }).catch(err => console.log(err))
       
 
 
     });
 
+    // Untuk Preview
     $(document).on('change', '#InputImage', function(event){
       const read = new FileReader();
       read.readAsDataURL(this.files[0]);
       read.onload = () => {
         $(this).prev().attr('src', read.result)
       }
-    })
+    });
+
+    // Untuk Delete
+    $(document).on('click', '#deleteButtonModal', function(event){
+      let index = this.dataset.index;
+      let attr = ambilAttribute(index, undefined, undefined);
+      let liActive = document.querySelector('#accordionSidebar > li.nav-item.active').children[0].getAttribute('href');
+      let url = `${liActive}?i=${attr.id[1]}`;
+
+      fetch(url, {method: 'DELETE'})
+        .then(result => {
+          if(result.ok != false) return result.statusText
+          else return result.text()
+        })
+        .then(result => {
+          alert(result);
+          location.reload();
+        })
+
+    });
+
+    // Event Tombol Class Or Category
+    $(document).on('click', '#actionClassButton', function(event){
+      let sibling = this.parentElement.previousElementSibling;
+      let selectElement = $(sibling).children('.action-element').children().last();
+      let formPolos = $(sibling).children('.form-element').children().last();
+      let classElement = $(sibling).children('.class-element').children().last();
+      let navLiActive = document.querySelector("#accordionSidebar > li.active > a");
+      let url = `${navLiActive.getAttribute('href')}class`;
+      let method;
+      let form = new FormData();
+
+      // Kondisi 
+      if(selectElement[0].value == 'add') {
+        form.append('value', formPolos[0].value);
+        method = 'POST';
+      } else if (selectElement[0].value == 'delete') {
+        form.append('value', $(classElement[0]).children(':selected').data('id'));
+        method = 'DELETE';
+      } else {
+        method = 'PUT';
+        form.append('old', $(classElement[0]).children(':selected').data('id'));
+        form.append('value', formPolos[0].value);
+      };
+      
+      fetch(url, {method, body: form})
+        .then(result => result.text())
+        .then(result => {
+          alert(result);
+          // location.reload()
+        })
+      
+    });
+
+
+    // Event Delete by
+    $(document).on('click', '#deleteByButtonModal', function(event){
+      let sibling = this.parentElement.previousElementSibling;
+      let rowOrClass = $(sibling).children('.rows-or-class').children('select')[0];
+      let customClass = $(sibling).children('.class').children('select')[0];
+      const row = $('#tabelUtama > tbody ');
+      const formT = new FormData();
+      let ArrayNew = [];
+      let liActive = document.querySelector('#accordionSidebar > li.nav-item.active').children[0].getAttribute('href');
+
+      if(rowOrClass.value == 'delete_by_class') {
+        let val = ambilKata(customClass.value, '_', {without: [0], uppercase: false, space:false});
+        formT.append('value', val);
+        // formT.append('value' , customClass.value)
+      } else if (rowOrClass.value == 'delete_by_selected_row') {
+        let rowActive = document.querySelectorAll('#tabelUtama > tbody > tr.active');
+        rowActive.forEach(function(e,i){
+          let index = ambilIndexLi(e, {same: true});
+          let {id} = ambilAttribute(index);
+          ArrayNew.push(parseInt(id[1]));
+        });
+        formT.append('valueArray', JSON.stringify(ArrayNew));
+      };
+
+
+      fetch(`${liActive}by`, {
+        body: formT,
+        method: 'DELETE'
+      }).then(result => result.text())
+        .then(result => console.log(result))
+
+      
+
+
+      
+
+    });
+
+
+
+
+
+    // // // // // Kumpulan Fungsi // // // // //
+
+
+
+
 
     // Fungsi Utama adalah untuk mengambil nama dari kelas yang aktif
     // Menerima 3 argument yaitu
@@ -490,6 +595,7 @@ document.onreadystatechange = () => {
     // Argument Kedua adalah coloum yang ingin dicari
     // Argument Ketiga adalah nilai yang mau dicarinya
     function cariBaris(querySearch, coloum, search) {
+      // Cari Baris
       querySearch = $(querySearch);
       // Hapus baris yang terdapat dan kecilkan semua huruf
       search = ambilKata(search, ' ', {space: false, uppercase: false}); // Nature
@@ -545,16 +651,6 @@ document.onreadystatechange = () => {
       return test;
     }
 
-    function _base64ToArrayBuffer(base64) {
-      var binary_string = window.atob(base64);
-      var len = binary_string.length;
-      var bytes = new Uint8Array(len);
-      for (var i = 0; i < len; i++) {
-          bytes[i] = binary_string.charCodeAt(i);
-      }
-      return bytes.buffer;
-  }
-
     function gaTermasuk(dont, value) {
       let i = 0;
       if (dont.length > 0) {
@@ -581,16 +677,26 @@ document.onreadystatechange = () => {
     function ambilOption() {
       // Ambil Option
       const option = document.querySelectorAll("#inputShowClass > option");
+      const result = {};
+      const arVal2 = [];
       const arVal = [];
       option.forEach(function (e, i) {
-        if (i !== 0) arVal.push(e.textContent);
+
+        if (i !== 0) {
+          arVal.push(e.textContent);
+          arVal2.push(e.dataset.value);
+        }
       });
-      return arVal;
+
+      result.val = arVal
+      result.data = arVal2;
+      
+      return result;
     }
 
-    function ambilIndexLi(el) {
+    function ambilIndexLi(el, option) {
       let li = document.querySelectorAll("#tabelUtama > tbody > tr");
-      let li2 = el.parentElement.parentElement;
+      let li2 = option.same != true ? el.parentElement.parentElement : el;
       let hasilIndex;
       li.forEach(function (e, i) {
         if (e == li2) hasilIndex = i;
@@ -708,6 +814,7 @@ document.onreadystatechange = () => {
           let value = e.value === undefined ? "" : e.value;
           let classElement = e.class === undefined ? "" : e.class;
           let classElement2 = e.class2 === undefined ? "" : e.class2;
+          let data = e.data === undefined ? [] : e.data;
           place = value !== "" ? "" : place;
       
           if(e.id !== undefined) {
@@ -725,9 +832,9 @@ document.onreadystatechange = () => {
             html += `<div class="form-group ${classElement}">`;
             html += `<label for="InputFullname">${e.name} : </label><select name="${e.realName}" class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
             if(e.value !== undefined) {
-              e.value.forEach((e) => {
-                let val = ambilKata(e, ' ', {space: false, ganti: '_'});
-                html += `<option value="${val.toLowerCase()}">${e}</option>`
+              e.value.forEach((element, i) => {
+                let val = ambilKata(element, ' ', {space: false, ganti: '_', uppercase: false});
+                html += `<option value="${val}" data-id="${data[i]}" >${element}</option>`
               })
             }
             
@@ -749,8 +856,11 @@ document.onreadystatechange = () => {
       // Bagian Footer
       footer.innerHTML = `<button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>`;
       footerComponent.forEach(
-        (e) =>
-          (footer.innerHTML += `<button class="btn ${e.class}" type="button" id="${e.id}" >${e.name}</button>`)
+        (e) => {
+          let data = e.data === undefined ? '' : e.data;
+          footer.innerHTML += `<button class="btn ${e.class}" ${data} type="button" id="${e.id}" >${e.name}</button>`
+
+        }
       );
     }
     // Akir Event table
@@ -772,6 +882,7 @@ document.onreadystatechange = () => {
     // untuk menambil kata ke-berapa dari string
     function ambilKata(word, pemisah, option) {
       let word2 = word.split(pemisah);
+
       let result = "";
       
       // Destructuring 

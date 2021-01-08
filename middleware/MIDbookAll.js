@@ -2,6 +2,7 @@ let obj = {};
 const tabel = require("../model/modelIndex");
 const fs = require("fs");
 const path = require("path");
+const url = require('url');
 
 obj.post = async function (req, res) {
   try {
@@ -55,5 +56,26 @@ obj.put = async function (req, res) {
   }
   res.sendStatus(200);
 };
+
+obj.delete = async function(req, res) {
+  try {
+    let link = url.parse(req.url, true).query;
+    let {tabelBook} = await tabel();
+  
+    let u = await tabelBook.findAll({where: {
+      id: link.i
+    }, raw: true});
+  
+    if(u.length <= 0 ) return res.sendStatus(404);
+    await tabelBook.destroy({where : {
+      id: link.i
+    }});
+  
+    
+    res.sendStatus(200)
+  } catch(err) {
+    res.status(500).send(err)
+  }
+}
 
 module.exports = obj;

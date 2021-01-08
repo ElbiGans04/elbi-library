@@ -162,12 +162,14 @@ module.exports = function (data) {
     cate.forEach(function (e, i) {
       // Buat Object Key dari element Terkait
       const objKey = Object.keys(e);
+    
       // Ambil Nilai
       const nilai = e[objKey[1]];
+      const id = e[objKey[0]]
       // Saat index == 0
       if (i === 0)
         result += `<select class="custom-select custom-select-sm form-control form-control-sm ml-3" id="inputShowClass" name="" aria-controls="dataTable"><option value="all">All</option>`;
-      result += `<option value="${nilai}">${nilai}</option>`;
+      result += `<option value="${nilai}" data-value="${id}">${nilai}</option>`;
       // Saat Terakhir
       if (i == cate.length - 1) result += "</select>";
     });
