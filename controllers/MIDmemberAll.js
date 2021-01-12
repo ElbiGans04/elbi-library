@@ -5,23 +5,23 @@ let obj = {};
 obj.post = async (req, res) => {
   try {
     const { tabelClass, Op, tabelMember } = await tabel();
-    
     let classM = await tabelClass.findAll({
       where: {
         class: {
-          [Op.substring]: req.body.class_id.slice(5),
+          [Op.substring]: req.body.class.slice(5),
         },
       },
       raw: true,
     });
   
     req.body.class_id = classM[0].id;
+    delete req.body.class;
   
   
     await tabelMember.create(req.body);
     res.status(201).send("Success");
   } catch (err) {
-    res.statusCode(500).send(err)
+    res.sendStatus(500).send(err)
   }
 };
 
@@ -33,11 +33,12 @@ obj.put = async function(req,res){
     let u = await tabelMember.findAll({where: {id: req.body.id}})
     if(u.length <= 0) return res.sendStatus(404);
 
+    console.log(req.body)
     
     let classM = await tabelClass.findAll({
       where: {
         class: {
-          [Op.substring]: req.body.class_id.slice(5),
+          [Op.substring]: req.body.class.slice(5),
         },
       },
       raw: true,
@@ -49,7 +50,7 @@ obj.put = async function(req,res){
     res.status(201).send("Success")
 
   } catch (err) {
-    res.statusCode(500).send(err)
+    res.sendStatus(500).send(err)
   }
 
 };
@@ -57,6 +58,8 @@ obj.put = async function(req,res){
 obj.delete = async function(req, res) {
   let link = url.parse(req.url, true).query;
   const { tabelClass, Op, tabelMember } = await tabel();
+
+  console.log(req.body)
 
   // Validation
   let u = await tabelMember.findAll({where: {id: link.i}})

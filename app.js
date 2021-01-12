@@ -57,17 +57,19 @@
     [{ category: "nature" }, { category: "fantasy" }, { category: "history" }],
   ];
 
-  // await sequelize.sync({ force: true });
-  // let classT = await tabelClass.bulkCreate(demo[2]);
-  // let cat = await tabelCategory.bulkCreate(demo[3]);
-  // let user2 = await tabelMember.bulkCreate(demo[0]);
-  // await tabelBook.bulkCreate(demo[1]);
+  
+
+  await sequelize.sync({ force: true });
+  let classT = await tabelClass.bulkCreate(demo[2]);
+  let cat = await tabelCategory.bulkCreate(demo[3]);
+  let user2 = await tabelMember.bulkCreate(demo[0]);
+  await tabelBook.bulkCreate(demo[1]);
 
   app.set("views", path.join(__dirname, "./views"));
   app.set("view engine", "pug");
   app.use("/assets", express.static(__dirname + "/public"));
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
-
+  
   router(app);
 })();

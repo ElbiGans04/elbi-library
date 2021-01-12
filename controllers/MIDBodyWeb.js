@@ -103,13 +103,12 @@ module.exports = function (data) {
 
         // Taruh without coloumn diattribute
         for (let test in data[e].dataValues) {
-          if (j == 0) result += `<tr data-hidden="`;
+          if (j == 0) result += `<tr `;
           if (termasuk(coloumnAttr, j) === true) {
             const id = termasuk(identitas, j, "i");
-            const idd = id !== undefined ? `${id.value}` : "";
+            const idd = id !== undefined ? `|${id.value}` : "";
             const value = data[e].dataValues[test];
-            result += `${test}=${value}/${idd}`;
-            result += "/-/";
+            result += `data-${test}="${value}${idd}"`;
           }
           if (j == objProperti.length - 1) result += `">`;
 
@@ -130,8 +129,7 @@ module.exports = function (data) {
             const id = termasuk(identitas, i, "i");
             const idd = id !== undefined ? `data-as="${id.value}"` : "";
             
-            let classElement = f.split("_")[1];
-            classElement = classElement == undefined && classElement == null ? f : classElement;
+ 
             let idx, nilai;
             if ( typeof value == "object" ) {
               idx = Object.keys(value.dataValues);
@@ -141,7 +139,7 @@ module.exports = function (data) {
               nilai = obj[i] == 'book_image' ? `<img style="height: 100px; max-width: 100%" src="data:image/${data[e].dataValues['book_image_type']};base64,${value}" alt="${obj[i]}">` : value;
             }
             
-            result += `<td class = 'table-${classElement}' ${idd}>${nilai}</td>`;
+            result += `<td name = '${f}' ${idd}>${nilai}</td>`;
           }
           i++;
         }

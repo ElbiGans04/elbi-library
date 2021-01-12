@@ -2,11 +2,11 @@ const dotenv = require("dotenv").config({
   path: __dirname + "/../config/.env",
 });
 const port = process.env.APP_PORT;
-const member = require("../middleware/MIDmember");
-const book = require("../middleware/MIDbook");
+const member = require("../controllers/MIDmember");
+const book = require("../controllers/MIDbook");
 const {multer, fileSize, diskStorage} = require('../middleware/multer');
-const memberPost = require('../middleware/MIDmemberAll');
-const bookData = require('../middleware/MIDbookAll');
+const memberPost = require('../controllers/MIDmemberAll');
+const bookData = require('../controllers/MIDbookAll');
 
 
 module.exports = async function (app) {
@@ -89,8 +89,11 @@ module.exports = async function (app) {
     let tabel = require('../model/modelIndex');
     let {tabelMember, Op, tabelClass} = await tabel();
     let value;
+
+    // Jika Nilainya array
     if(req.body.valueArray !== undefined) {
-      value = JSON.parse(req.body.valueArray)
+      value = JSON.parse(req.body.valueArray);
+      console.log(value)
       await tabelMember.destroy({
         where: {
           id : {
@@ -104,7 +107,9 @@ module.exports = async function (app) {
         class: {
           [Op.substring] : value
         }
-      }, raw: true})
+      }, raw: true});
+
+     if(classCustom.length <= 0 ) return res.sendStatus(4004)
      await tabelMember.destroy({
        where: {
          class_id: classCustom[0].id

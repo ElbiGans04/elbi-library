@@ -1,3 +1,4 @@
+import {ubahHurufPertama, ambilKata} from '/assets/js/module.js'
 document.onreadystatechange = () => {
   if (document.readyState === "complete") {
     // Tambahkan class Active pada li saat load
@@ -36,11 +37,11 @@ document.onreadystatechange = () => {
       } else if (navActiveName == "book") {
         function format(d) {
           return (
-            `Page Thickness: ${d.book_page_thickness} <br>` +
-            `Isbn: ${d.book_isbn} <br>` +
-            `Publisher : ${d.book_publisher} <br>` +
-            `CreateAt : ${d.createdAt} <br>` +
-            `UpdateAt : ${d.updatedAt}`
+            `Page Thickness: ${d.book_page_thickness.value} <br>` +
+            `Isbn: ${d.book_isbn.value} <br>` +
+            `Publisher : ${d.book_publisher.value} <br>` +
+            `CreateAt : ${d.createdat.value} <br>` +
+            `UpdateAt : ${d.updatedat.value}`
           );
         }
 
@@ -81,7 +82,7 @@ document.onreadystatechange = () => {
               detailRows.splice(idx, 1);
             } else {
               tr.addClass("details");
-              row.child(format(ambilAttribute(row[0][0], 'hidden'))).show();
+              row.child(format(ambilAttribute(row[0][0], 'body'))).show();
 
               // Add to the 'open' array
               if (idx === -1) {
@@ -148,28 +149,21 @@ document.onreadystatechange = () => {
     });
 
     // Event table
-    ("use strict");
+    "use strict";
 
-    // Event Klik Untuk Tombol Action Edit
+    /////////////////// Event Klik Untuk Tombol Action Edit ////////////////////////////////
     $(document).on("click", "button.edit", function (e) {
       $("#modalMultiGuna").modal("toggle");
-
       // ambil Option
-      let arVal = ambilOption().val;
-
+      let arVal = ambilOption();
       // Dapatkan Index Li
       let hasilIndex = ambilIndexLi(this, {});
-
       // Ambil Attribute bedasarkan coloumn yang diklik
-      let obj = ambilAttribute(hasilIndex);
-
+      let obj = ambilAttribute(hasilIndex, 'body');
       // Gabungkan Baris dengan Attibute
-      let newObj = MixRowsAndAttrs(this, obj, true);
-
-
+      let newObj = MixRowsAndAttrs(hasilIndex, obj);
       // generate modal Body with type
-      const result = modalBody(newObj, arVal);
-  
+      const result = modalBody(newObj, arVal, 'edit');
       // Panggil Fungsi Modal-generate
       modalGenerate("Update", result, [
         {
@@ -180,10 +174,10 @@ document.onreadystatechange = () => {
       ]);
 
       // Setel Nilai Default modal category
-      setModalNilai(hasilIndex);
+      // setModalNilai(hasilIndex);
     });
 
-    //  Event Klik Untuk Tombol Action Delete
+    ////////////////////////  Event Klik Untuk Tombol Action Delete/////////////////
     $(document).on("click", "button.delete", function (e) {
       let user = $(this).parent().prevAll("[data-as=identifier]").text();
       let idx = ambilIndexLi(this, {})
@@ -230,7 +224,10 @@ document.onreadystatechange = () => {
       }
     });
 
-    // Modal Box Delete By
+
+    ////////////////////////////////////////////////////////////////
+    ////////////////////////// Delete By///////////////////////////
+    ///////////////////////////////////////////////////////////////
     $(document).on("click", "#deleteModalByButton", function (e) {
       $("#modalMultiGuna").modal("show");
       const option = ambilOption();
@@ -241,17 +238,17 @@ document.onreadystatechange = () => {
             name: "Delete By",
             value: ["Delete by Class", "Delete by selected row"],
             type: "select",
-            id: true,
-            class: 'rows-or-class'
+            id: `deleteBy`,
+            parentClass: 'rows-or-class'
           },
-          { name: "Class", value: option.val , data: option.data, type: "select", id: "deleteByClass", class: 'class' },
-          {type: 'div' , class: 'alert alert-danger'}
+          { name: "Class", value: option.val , data: option.data, type: "select", id: "deleteByClass", parentClass: 'class' },
+          {type: 'div' , parentClass: 'alert alert-danger'}
         ],
         [{ class: "btn-danger", name: "DELETE", id: 'deleteByButtonModal' }]
       );
 
       let rowActive = $("table#tabelUtama > tbody > tr.active");
-
+      rowActive = cariBaris('#tabelUtama tbody tr', 'class', 'active');
       // let coloumName = $("table#tabelUtama > tbody > tr.active");
       let searchByColoum = cariBaris(
         "#tabelUtama tbody tr",
@@ -266,37 +263,33 @@ document.onreadystatechange = () => {
       if ($(rowActive).length >= 1) {
         const optAttr = optionELement[1].getAttribute('value');
         $("#deleteBy").val(optAttr);
-        tampilkanNama(rowActive, 1, true);
+        tampilkanNama(rowActive);
         group.css("display", "none");
       }
       if ($(rowActive).length === 0) {
         const optAttr = optionELement[0].getAttribute('value');
         $("#deleteBy").val(optAttr);
         group.css("display", "block");
-        return tampilkanNama(searchByColoum, 2, true);
+        return tampilkanNama(searchByColoum);
       }
     });
 
-    // Event Select Option Class
-    // Event Select Option By
+    // Event select action
     $(document).on("change", '#deleteBy', function (e) {
       let value = $(this).val();
       let rows = $("table#tabelUtama > tbody > tr.active");
       let group = $(`#modalMultiGuna > div > div > div.modal-body > div:nth-child(2)`);
-
+      console.log(value)
       // Jika Nilainya sama dengan 'rows'
-      if (value == "Selected") {
+      if (value == "delete_by_selected_row") {
         group.css('display', 'none');
         // Jika user belum select rows apapun maka tampilkan modal
         if ($(rows).length <= 0) {
           modalGenerate('Warning', 
           {tunggal: `<div class="form-group"><div class="alert alert-danger"><strong>Please select the row first</strong></div></div>`}
           , [])
-        } else tampilkanNama(rows, 1, false);
-      }
-      
-      // Jika Nilainya Class
-      if (value == "Class") {
+        } else tampilkanNama(rows);
+      } else if (value == 'delete_by_class') {
         const option = ambilOption().val;
         let searchByColoum = cariBaris(
           "#tabelUtama tbody tr",
@@ -304,8 +297,9 @@ document.onreadystatechange = () => {
           option[0]
           );
         group.css('display', 'block');
-        tampilkanNama(searchByColoum, 2, false);
+        tampilkanNama(searchByColoum);
       }
+      
     });
 
     // Event change untuk input class dideleteByModal
@@ -320,23 +314,105 @@ document.onreadystatechange = () => {
       tampilkanNama(value, 2, false);
     });
 
-    // Hilangkan class aktif saat user mengklik tombol close
-    $("#modalMultiGuna").on("click", "[data-dismiss=modal]", function (e) {
-      disabledOrNo(false);
-      $("table#tabelUtama > tbody > tr.active").removeClass("active");
-      $("#rowSelect").css("opacity", "0");
+
+
+    // EVENT DELETE BY
+    // Event Delete by
+    $(document).on('click', '#deleteByButtonModal', function(event){
+      let sibling = this.parentElement.previousElementSibling;
+      let rowOrClass = $(sibling).children('.rows-or-class').children('select')[0];
+      let customClass = $(sibling).children('.class').children('select')[0];
+      const row = $('#tabelUtama > tbody ');
+      const formT = new FormData();
+      let ArrayNew = [];
+      let liActive = document.querySelector('#accordionSidebar > li.nav-item.active').children[0].getAttribute('href');
+      
+      if(rowOrClass.value == 'delete_by_class') {
+        let val = ambilKata(customClass.value, '_', {without: [0], uppercase: false, space:true});
+        formT.append('value', val);
+        // formT.append('value' , customClass.value)
+      } else if (rowOrClass.value == 'delete_by_selected_row') {
+        let rowActive = document.querySelectorAll('#tabelUtama > tbody > tr.active');
+        rowActive.forEach(function(e,i){
+          let index = ambilIndexLi(e, {same: true});
+          let {id} = ambilAttribute(index, 'body');
+          console.log(index, id, e)
+          
+          ArrayNew.push(parseInt(id.value));
+        });
+        formT.append('valueArray', JSON.stringify(ArrayNew));
+      };
+
+
+      fetch(`${liActive}by`, {
+        body: formT,
+        method: 'DELETE'
+      }).then(result => result.text())
+        .then(result => alert(result))
+
+      
+
+
+      
+
     });
 
-    // Add Modal
+
+    /////////////////////////////////////////////////////////////
+    //////// // // // // AKHIR DELETEBY /////////////////////////
+    /////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////
+    ////////////////// Add Modal//////////////////////
+    //////////////////////////////////////////////////
     $(document).on('click', '#addMember', function(e){
       $('#modalMultiGuna').modal('show');
       let option = ambilOption().val;
-      let attr = ambilAttribute(0, 'hidden', '#tabelUtama > thead > tr');
-      let newAttr = MixRowsAndAttrs(this, attr);
-      let modalBo = modalBody(newAttr, option);
-
+      let attr = ambilAttribute(0, 'head');
+      let newAttr = MixRowsAndAttrs(null, attr);
+      let modalBo = modalBody(newAttr, option, 'add');
+      
+      modalBo.class.value = option
+      
       modalGenerate('Add', modalBo, [{name: 'Add', class: 'btn-primary', id: 'actionButtonModal'}])
     });
+
+
+
+
+
+
+    //////////////////////////////////////////
+    /////////// END OF ADD MODAL ///////////
+    /////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////////
+    ////////////////////// CLASS //////////////////////////
+    ///////////////////////////////////////////////////////
 
     // Event saat
     $(document).on('click', '#modifyClass', function(event){
@@ -346,10 +422,10 @@ document.onreadystatechange = () => {
 
       // Modal Generate
       modalGenerate(name, [
-        {name: 'Action',type: 'select', value: ['add', 'update', 'delete'], id: 'modifyAction', class: 'action-element'},
-        { name: `Add` , type: 'input', id: true , class: 'form-element'},
-        {name: 'Class', type: 'select', value: test.val, id: 'inputModalClass', data: test.data, class: 'class-element d-none'},
-        {type: 'div' , class2 : 'alert alert-danger' , class: 'd-none'}
+        {name: 'Action',type: 'select', value: ['add', 'update', 'delete'], id: 'modifyAction', parentClass: 'action-element'},
+        { name: `Add` , type: 'input', id: true , parentClass: 'form-element'},
+        {name: 'Class', type: 'select', value: test.val, id: 'inputModalClass', data: test.data, parentClass: 'class-element d-none'},
+        {type: 'div' , childClass : 'alert alert-danger' , parentClass: 'd-none'}
       ], [
         { name: 'Apply', class: 'btn-primary', id: 'actionClassButton' }
       ])
@@ -376,7 +452,7 @@ document.onreadystatechange = () => {
       // Jika nilai nya delete
       if (value === "delete") {
         $(alert).removeClass('d-none');
-        $(alert).children().first().html(`Are you sure to remove <strong>${$(classEle).children().last().val()}</strong>?`);
+        $(alert).children().first().html(`Are you sure to remove <strong>${ambilKata($(classEle).children().last().val(), '_', {space: true, uppercase: true})}</strong>?`);
         $(classEle).removeClass('d-none');
       }
       
@@ -390,6 +466,67 @@ document.onreadystatechange = () => {
       }
 
     });
+
+    // Event class pada modal class 
+    $(document).on('change', '#inputModalClass', function(event){
+      const value = ambilKata(this.value, '_', {uppercase: true, space: true})
+      this.parentElement.nextElementSibling.children[0].innerHTML = `are you sure to remove <strong>${value}</strong> ?`
+    });
+
+
+
+
+
+    // Event Tombol Class Or Category
+    $(document).on('click', '#actionClassButton', function(event){
+      let sibling = this.parentElement.previousElementSibling;
+      let selectElement = $(sibling).children('.action-element').children().last();
+      let formPolos = $(sibling).children('.form-element').children().last();
+      let classElement = $(sibling).children('.class-element').children().last();
+      let navLiActive = document.querySelector("#accordionSidebar > li.active > a");
+      let url = `${navLiActive.getAttribute('href')}class`;
+      let method;
+      let form = new FormData();
+
+      // Kondisi 
+      if(selectElement[0].value == 'add') {
+        form.append('value', formPolos[0].value);
+        method = 'POST';
+      } else if (selectElement[0].value == 'delete') {
+        form.append('value', $(classElement[0]).children(':selected').data('id'));
+        method = 'DELETE';
+      } else {
+        method = 'PUT';
+        form.append('old', $(classElement[0]).children(':selected').data('id'));
+        form.append('value', formPolos[0].value);
+      };
+      
+      fetch(url, {method, body: form})
+        .then(result => result.text())
+        .then(result => {
+          alert(result);
+          location.reload()
+        })
+      
+    });
+
+
+
+
+    //////////////////////////////////////////////////////////////////////
+    ////////////////////// END OF MODAL CLASS ///////////////////////////
+    ////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
 
     $(document).on('click', '#actionButtonModal' , function(event){
       let element = $(this).parent().prev().children();
@@ -448,9 +585,9 @@ document.onreadystatechange = () => {
     // Untuk Delete
     $(document).on('click', '#deleteButtonModal', function(event){
       let index = this.dataset.index;
-      let attr = ambilAttribute(index, undefined, undefined);
+      let attr = ambilAttribute(index, 'body');
       let liActive = document.querySelector('#accordionSidebar > li.nav-item.active').children[0].getAttribute('href');
-      let url = `${liActive}?i=${attr.id[1]}`;
+      let url = `${liActive}?i=${attr.id.value}`;
 
       fetch(url, {method: 'DELETE'})
         .then(result => {
@@ -459,82 +596,14 @@ document.onreadystatechange = () => {
         })
         .then(result => {
           alert(result);
-          location.reload();
+          // location.reload();
         })
 
     });
 
-    // Event Tombol Class Or Category
-    $(document).on('click', '#actionClassButton', function(event){
-      let sibling = this.parentElement.previousElementSibling;
-      let selectElement = $(sibling).children('.action-element').children().last();
-      let formPolos = $(sibling).children('.form-element').children().last();
-      let classElement = $(sibling).children('.class-element').children().last();
-      let navLiActive = document.querySelector("#accordionSidebar > li.active > a");
-      let url = `${navLiActive.getAttribute('href')}class`;
-      let method;
-      let form = new FormData();
-
-      // Kondisi 
-      if(selectElement[0].value == 'add') {
-        form.append('value', formPolos[0].value);
-        method = 'POST';
-      } else if (selectElement[0].value == 'delete') {
-        form.append('value', $(classElement[0]).children(':selected').data('id'));
-        method = 'DELETE';
-      } else {
-        method = 'PUT';
-        form.append('old', $(classElement[0]).children(':selected').data('id'));
-        form.append('value', formPolos[0].value);
-      };
-      
-      fetch(url, {method, body: form})
-        .then(result => result.text())
-        .then(result => {
-          alert(result);
-          // location.reload()
-        })
-      
-    });
+    
 
 
-    // Event Delete by
-    $(document).on('click', '#deleteByButtonModal', function(event){
-      let sibling = this.parentElement.previousElementSibling;
-      let rowOrClass = $(sibling).children('.rows-or-class').children('select')[0];
-      let customClass = $(sibling).children('.class').children('select')[0];
-      const row = $('#tabelUtama > tbody ');
-      const formT = new FormData();
-      let ArrayNew = [];
-      let liActive = document.querySelector('#accordionSidebar > li.nav-item.active').children[0].getAttribute('href');
-
-      if(rowOrClass.value == 'delete_by_class') {
-        let val = ambilKata(customClass.value, '_', {without: [0], uppercase: false, space:false});
-        formT.append('value', val);
-        // formT.append('value' , customClass.value)
-      } else if (rowOrClass.value == 'delete_by_selected_row') {
-        let rowActive = document.querySelectorAll('#tabelUtama > tbody > tr.active');
-        rowActive.forEach(function(e,i){
-          let index = ambilIndexLi(e, {same: true});
-          let {id} = ambilAttribute(index);
-          ArrayNew.push(parseInt(id[1]));
-        });
-        formT.append('valueArray', JSON.stringify(ArrayNew));
-      };
-
-
-      fetch(`${liActive}by`, {
-        body: formT,
-        method: 'DELETE'
-      }).then(result => result.text())
-        .then(result => console.log(result))
-
-      
-
-
-      
-
-    });
 
 
 
@@ -551,11 +620,11 @@ document.onreadystatechange = () => {
     // Argument Pertama user1 sebagai data yang mau ditampilkan
     // Argument Kedua jika bernilai 1 maka function akan mengambil nilainya dengan method jquery text
     // Argument ke 3 jika nilainya true maka modal nya akan ditoggle
-    function tampilkanNama(user1, state, toggleee) {
+    function tampilkanNama(user1) {
       let namaUser = "";
       
       $.each(user1, function (i, e) {
-        let nameOrTitle = $(e).children("[data-identifier=true]").text();
+        let nameOrTitle = $(e).children(`[data-as="identifier"]`).text() || e.name;
         let user = nameOrTitle.length >= 1 ? nameOrTitle : e;
 
         // Jika user1 lebih besar dari pada 5 maka
@@ -599,14 +668,24 @@ document.onreadystatechange = () => {
       querySearch = $(querySearch);
       // Hapus baris yang terdapat dan kecilkan semua huruf
       search = ambilKata(search, ' ', {space: false, uppercase: false}); // Nature
-      let value = [];
+      let result = [];
       
       $.each(querySearch, function (i, e) {
-        let kata = ambilKata($(e).children(coloum).text(), ' ', {space: false, uppercase: false});
-        if ( kata == search) value.push($(e).children("[data-as=identifier]").text());
+        let kata = coloum !== 'class' ? ambilKata($(e).children(coloum).text(), ' ', {space: false, uppercase: false}) : coloum;
+        let name = $(e).children(`[data-as="identifier"]`).text();
+        let id = $(e).data('id')
+        if (coloum == 'class') {
+          if(e.classList.contains(search)) {
+            result.push({name, id})
+          }
+        } else {
+          if(search == 'all' || kata == search) {
+            result.push({name, id})
+          }
+        }
       });
-
-      return value;
+      
+      return result;
     }
 
     // Fungsinya adalah untuk memberikan disabled pada beberapa tombol
@@ -616,63 +695,64 @@ document.onreadystatechange = () => {
       else $(".disableButton").removeAttr("style").removeAttr("disabled");
     }
 
-    function ambilAttribute(i, where, ambil) {
-      where = where == undefined ? "hidden" : where ;
-      ambil = ambil == undefined ? '#tabelUtama > tbody tr[role=row]' : ambil;
-      let test = {};
-      let tr = document.querySelectorAll(ambil);
-      let data = tr[i].dataset[where];
-      let dataPotong = data.split('/-/');
-      dataPotong.forEach(function(e,i){
-        if(e.length > 0) {
-          //    /-/key=value=/type/-/ == id/
-          let pecah = e.split("="); // THis is Value
-          
-          // [0]name [1]fael [2]/identifer
-          let ii = pecah.length - 1;
-
-          // Bagian Type. Contoh: /identifer
-          let pecah2 = pecah[ii].split('/');
-          // [0] / [1] identifer
-          let judul = pecah.length > 1 ? pecah[0] : pecah2[0];
-          let val = pecah2[1].length <= 1 ? '' : pecah2[1];
-          let textValue;
-          // let textValue = pecah.length > 1 ? pecah2[0] : '';
-          if (pecah.length > 1) {
-            textValue = pecah.length > 2 ? pecah[0] : pecah2[0];
-          } else textValue = ''
-          // textValue = pecah.length > 2 ? pecah[1] : pecah2[0]
-
-          
-          test[judul] = [val, textValue];
-        }
-      });
+    function ambilAttribute(index, bagian) {
+      const where = bagian == 'body' ? '#tabelUtama > tbody tr[role=row]' : '#tabelUtama > thead tr';
+      let rows = document.querySelectorAll(where)[index];
+      let result = {};
       
-      return test;
-    }
-
-    function gaTermasuk(dont, value) {
-      let i = 0;
-      if (dont.length > 0) {
-        for (let a of dont) {
-          // Jika Value sama dengan element didalam dont maka return false
-          if (a === value) return false;
-          // return true saat 'i' == dont length. Mengapa saya tidak mengecheck nilai yang sama lagi ? Kerena telah dicheck oleh 'if'  diatas
-          if (i === dont.length - 1) return true;
-          i++;
+      // Jika Body 
+      if(bagian == 'body') {
+        for (let element in rows.dataset) {
+            let value = rows.dataset[element].split('|');
+            let as = value.length <= 1 ? undefined : value[1];
+            result[element] = {value: rows.dataset[element]}
+            if(as !== undefined) result[element]['as'] = value[1];
         }
-      } else return true;
-    }
-
-    function termasuk(withValue, i, el) {
-      for (let j in withValue) {
-        const kon = el === undefined ? withValue[j]  : withValue[j][el];
-        if ( kon === i) {
-          if(el != undefined) return { value: withValue[j]['as'], kondisi: true }
-          else return true;
-        }
+      } else {
+        let data = rows.dataset['hidden'].split('/-/');
+        data.forEach(function(element, index){
+          if(index !== (data.length - 1)) {
+            let pecah = element.split('/');
+            result[ pecah[0]] = {}
+            let as = pecah[1].length <= 1 ? undefined : pecah[1];
+            if(as !== undefined) result[pecah[0]]['as'] = pecah[1];
+          }
+          
+        });
       }
-    };
+      
+      return result
+      // where = where == undefined ? "hidden" : where ;
+      // let test = {};
+      // let data = tr[i].dataset[where];
+      // let dataPotong = data.split('/-/');
+      // dataPotong.forEach(function(e,i){
+      //   if(e.length > 0) {
+      //     //    /-/key=value=/type/-/ == id/
+      //     let pecah = e.split("="); // THis is Value
+          
+      //     // [0]name [1]fael [2]/identifer
+      //     let ii = pecah.length - 1;
+
+      //     // Bagian Type. Contoh: /identifer
+      //     let pecah2 = pecah[ii].split('/');
+      //     // [0] / [1] identifer
+      //     let judul = pecah.length > 1 ? pecah[0] : pecah2[0];
+      //     let val = pecah2[1].length <= 1 ? '' : pecah2[1];
+      //     let textValue;
+      //     // let textValue = pecah.length > 1 ? pecah2[0] : '';
+      //     if (pecah.length > 1) {
+      //       textValue = pecah.length > 2 ? pecah[0] : pecah2[0];
+      //     } else textValue = ''
+      //     // textValue = pecah.length > 2 ? pecah[1] : pecah2[0]
+
+          
+      //     test[judul] = [val, textValue];
+      //   }
+      // });
+      
+      // return test;
+    }
 
     function ambilOption() {
       // Ambil Option
@@ -704,79 +784,136 @@ document.onreadystatechange = () => {
       return hasilIndex;
     }
 
-    function MixRowsAndAttrs(el, obj, value) {
-      let test = $(el).parent().prevAll();
-      const thead = document.querySelector("#tabelUtama > thead");
-      const tHeadChild = Array.from(thead.children[0].children);
-      let newObj = {};
+    function MixRowsAndAttrs (index, obj) {
+      const rows = Array.from(document.querySelectorAll('#tabelUtama > tbody tr[role=row]')[index || 0].children);
+      let newObj = {...obj};
+
       
-      $.each(tHeadChild, function (i, e) {
-        let index = $(e).nextAll().length - 1;
-        if (i !== 0 && tHeadChild.length - 1 !== i) {
-          let data = e.dataset.as;
-          let name = e.dataset.name;
-          
-          if (data != undefined) newObj[name] = [data]
+      rows.forEach((e,i) => {
+        // Agar TIdak mengambil coloumn pertama(row detail) dan coloumn action
+        if(i == 0) return;
+        if(i == (rows.length - 1)) return;
+
+        // Pelaksanaan
+        let name = e.getAttribute('name');
+        let value = e.children.length <= 0 ? e.textContent : e.children[0].getAttribute('src');
+        newObj[name] = {};
+        if(typeof index == 'number') newObj[name]['value'] = value;
+        let data = e.dataset.as === undefined ? '' : newObj[name]['as'] = e.dataset.as;
+      });
+
+      return newObj
+      
+    }
+    // function MixRowsAndAttrs(el, obj, value) {
+    //   let test = $(el).parent().prevAll();
+    //   const thead = document.querySelector("#tabelUtama > thead");
+    //   const tHeadChild = Array.from(thead.children[0].children);
+    //   let newObj = {};
+      
+      
+    //   $.each(tHeadChild, function (i, e) {
+    //     let index = $(e).nextAll().length - 1;
+    //     if (i !== 0 && tHeadChild.length - 1 !== i) {
+    //       let data = e.dataset.as;
+    //       let name = e.dataset.name;
+    //       let nilai;
+    //       console.log(value)
+    //       newObj[name] = {}
+    //       if (data != undefined) newObj[name]['as'] = data
 
           
-          if(value == true) {
-            if(test[index].children[0] !== undefined) nilai = test[index].children[0].getAttribute('src')
-            else nilai = test[index].textContent;
-          } else nilai = '';
+    //       if(value == true) {
+    //         if(test[index].children[0] !== undefined) nilai = test[index].children[0].getAttribute('src')
+    //         else nilai = test[index].textContent;
+    //       } else nilai = '';
 
-          // Jika Array
-          if( typeof newObj[name] == 'object' && newObj[name] !== undefined ) newObj[name].push(nilai);
-          else newObj[name] = nilai
+    //       // Jika Array
+    //       newObj['name']['value'] = nilai;
           
-        }
+          
+    //     }
   
-      });
+    //   });
+    //   console.log(newObj)
       
-      let mix = {...obj, ...newObj};
-      return mix
-    }
-
-    function modalBody(obj, arVal) {
-      let result = new Array;
-      let keyObj = Object.keys(obj);
-      let valObj = Object.values(obj);
+    //   let mix = {...obj, ...newObj};
       
-      valObj.forEach(function (e, i) {
-        if(keyObj[i] != 'updatedAt' && keyObj[i] !== 'createdAt') {
-          if(i == 0 && e[1].length <= 0) return
-          let result2 = {};
-          
-          result2.name = ambilKata(keyObj[i], '_', {without: [0]})
-          result2.realName = keyObj[i];
-          result2.value = e[0] == 'group' ? arVal : e;
-          result2.type = `input`;
-          result2.id = true;
+    //   return mix
+    // }
 
-          if(typeof e == 'object') {
-            if(e[0] == 'group') {
-              result2.type = 'select';
-              result2.id = 'inputClass'
-              result2.value = arVal;
-              result2.name = ambilKata(keyObj[i], '_', {without : [1]});
-
-            } else if(e[0] == 'image') {
-              result2.typeInput = 'file'
-              result2.src = e[1];
-              delete result2.value
-            } else {
-              result2.typeInput = i == 0 ? 'hidden' : 'input';
-              result2.type = i == 0 ? 'ff' : 'input';
-              result2.value = e[1];
-            }
-          }
-
-          // Masukan 
-          result.push(result2)
+    function modalBody(obj, optionValue, forWho) {
+      let newObj = {...obj};
+      let newarray = forWho == 'add' ? ['updatedat', 'createdat','id'] : ['updatedat', 'createdat'];
+      for(let objChild in newObj ) {
+        let name = objChild.toLowerCase();
+        if($.inArray(name, newarray) == -1) {
+          let as = newObj[objChild]['as'];
+          newObj[objChild]['name'] = ambilKata(objChild, '_', {uppercase: true, space: true, without: [0]});
+          newObj[objChild]['type'] =  'input';
+          newObj[objChild]['typeInput'] = name == 'id' ? 'hidden' : 'input'
+          newObj[objChild]['id'] = true;
+  
+          if(as == 'group') {
+            newObj[objChild]['value'] = optionValue.val;
+            newObj[objChild]['type'] = 'select';
+            newObj[objChild]['id'] = 'inputClass';
+            newObj[objChild]['data'] = optionValue.data
+          } else if (as == 'image') {
+            newObj[objChild]['type'] = 'file'
+          };
+        } else {
+          delete newObj[objChild]
         }
-        
-      });
-      return result;
+
+      }
+  
+      return newObj
+      
     }
+
+    // function modalBody(obj, arVal) {
+    //   console.log(obj)
+    //   let result = new Array;
+    //   let keyObj = Object.keys(obj);
+    //   let valObj = Object.values(obj);
+      
+    //   valObj.forEach(function (e, i) {
+    //     if(keyObj[i] != 'updatedAt' && keyObj[i] !== 'createdAt') {
+    //       if(i == 0 && e[1].length <= 0) return
+    //       let result2 = {};
+          
+    //       result2.name = ambilKata(keyObj[i], '_', {without: [0]})
+    //       result2.realName = keyObj[i];
+    //       result2.value = e[0] == 'group' ? arVal : e;
+    //       result2.type = `input`;
+    //       result2.id = true;
+
+    //       if(typeof e == 'object') {
+    //         if(e[0] == 'group') {
+    //           result2.type = 'select';
+    //           result2.id = 'inputClass'
+    //           result2.value = arVal;
+    //           result2.name = ambilKata(keyObj[i], '_', {without : [1]});
+
+    //         } else if(e[0] == 'image') {
+    //           result2.typeInput = 'file'
+    //           result2.src = e[1];
+    //           delete result2.value
+    //         } else {
+    //           result2.typeInput = i == 0 ? 'hidden' : 'input';
+    //           result2.type = i == 0 ? 'ff' : 'input';
+    //           result2.value = e[1];
+    //         }
+    //       }
+
+    //       // Masukan 
+    //       result.push(result2)
+    //     }
+        
+    //   });
+    //   return result;
+    // }
 
     function setModalNilai(i) {
       let li = document.querySelectorAll("#tabelUtama > tbody > tr");
@@ -802,56 +939,99 @@ document.onreadystatechange = () => {
 
       // Penerapan
       header.innerHTML = headerName;
-
+      
       body.innerHTML = "";
       let html = "";
-
+      
       if (bodyComponent.tunggal != undefined) body.innerHTML = `<div>${bodyComponent.tunggal}</div>`;
       else {
-        bodyComponent.forEach((e, i) => {
-          let input = e.typeInput == undefined ? "input" : e.typeInput;
-          let place = e.place == undefined ? `Enter ${e.name}` : e.place;
-          let value = e.value === undefined ? "" : e.value;
-          let classElement = e.class === undefined ? "" : e.class;
-          let classElement2 = e.class2 === undefined ? "" : e.class2;
-          let data = e.data === undefined ? [] : e.data;
-          place = value !== "" ? "" : place;
-      
-          if(e.id !== undefined) {
-            e.id = e.id === true ? `${e.name}` : e.id;
-            e.id = ubahHurufPertama(e.id, 'kecil');
-            let poto = e.id.split(' ');
-
-            if(poto.length > 1) {
-              e.id = '';
-              poto.forEach(element => e.id += element );
-            } else e.id = poto[0]
-          } else e.id = ''
-
-          if (e.type == "select") {
-            html += `<div class="form-group ${classElement}">`;
-            html += `<label for="InputFullname">${e.name} : </label><select name="${e.realName}" class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
-            if(e.value !== undefined) {
-              e.value.forEach((element, i) => {
-                let val = ambilKata(element, ' ', {space: false, ganti: '_', uppercase: false});
-                html += `<option value="${val}" data-id="${data[i]}" >${element}</option>`
+        for(let e in bodyComponent){
+          // Atur Nilai Default
+          let element = bodyComponent[e];
+          let type = element.type || 'input';
+          let id = element.id === true ? `input${ambilKata(element.name, ' ', {space: false, uppercase: false})}` : element.id;
+          id = element.id || `input`;
+          let placeholder = element.place || `enter ${element.name}`;
+          let parentClass = element.parentClass || '';
+          let childClass = element.childClass || '';
+          let data = element.data || [];
+          let value = element.value || ''
+          let typeInput = element.typeInput || 'input'
+          
+          
+          // Penerapan
+          if(type == 'select') {
+            html += `<div class="form-group ${parentClass}">`;
+            html += `<label for="InputFullname">${element.name} : </label><select name="${e}" class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${id}"  aria-controls="dataTable">`;
+            if(value !== undefined) {
+              value.forEach((el, i) => {
+                let val = ambilKata(el, ' ', {space: false, ganti: '_', uppercase: false});
+                html += `<option value="${val}" data-id="${data[i]}" >${el}</option>`
               })
-            }
-            
-            html += `</select></div>`;
-          } else if (e.type == 'div') html += `<div class="form-group ${classElement}"><div class="${classElement2}"></div></div>`
-          else {
-            if(e.type == 'input') html += `<div class="form-group ${classElement}"><label for="InputFullname">${e.name} : </label>`
-            if(e.src) html += `<img src="${e.src}" class="img-thumbnail">`
-            html += `<input class="form-control" id="Input${e.name}" name="${e.realName}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
-            if(e.type == 'input') html += `</div>`;
+            };
+
+            html += `</select></div>`
+          } else if (type == 'div') {
+            html += `<div class="form-group ${parentClass}"><div class="${childClass}"></div></div>`
+          } else if (type == 'input' || type == 'file') {
+            if(typeInput !== 'hidden' ) html += `<div class="form-group ${parentClass}"><label for="InputFullname">${element.name} : </label>`;
+            if(type == 'file') html += `<img src="${value}" class="img-thumbnail">`;
+            html += `<input class="form-control" id="Input${element.name}" name="${e}" type="${typeInput}" aria-describedby="${element.name}" placeholder="${placeholder}" value="${value}"/>`;
+            if(typeInput != 'hidden') html += '</div>'
           }
 
 
-          // Saat Terakhir
-          if (i == bodyComponent.length - 1) body.innerHTML = html;
-        });
+        }
+        
+        // Implentasi
+        body.innerHTML = html;
+        // Akhir Looping
       }
+      // else {
+      //   bodyComponent.forEach((e, i) => {
+      //     let input = e.typeInput == undefined ? "input" : e.typeInput;
+      //     let place = e.place == undefined ? `Enter ${e.name}` : e.place;
+      //     let value = e.value === undefined ? "" : e.value;
+      //     let classElement = e.class === undefined ? "" : e.class;
+      //     let classElement2 = e.class2 === undefined ? "" : e.class2;
+      //     let data = e.data === undefined ? [] : e.data;
+      //     place = value !== "" ? "" : place;
+      
+      //     if(e.id !== undefined) {
+      //       e.id = e.id === true ? `${e.name}` : e.id;
+      //       e.id = ubahHurufPertama(e.id, 'kecil');
+      //       let poto = e.id.split(' ');
+
+      //       if(poto.length > 1) {
+      //         e.id = '';
+      //         poto.forEach(element => e.id += element );
+      //       } else e.id = poto[0]
+      //     } else e.id = ''
+
+      //     if (e.type == "select") {
+      //       html += `<div class="form-group ${classElement}">`;
+      //       html += `<label for="InputFullname">${e.name} : </label><select name="${e.realName}" class="custom-select custom-select-sm form-control form-control-sm mb-2 " id="${e.id}"  aria-controls="dataTable" S>`;
+      //       if(e.value !== undefined) {
+      //         e.value.forEach((element, i) => {
+      //           let val = ambilKata(element, ' ', {space: false, ganti: '_', uppercase: false});
+      //           html += `<option value="${val}" data-id="${data[i]}" >${element}</option>`
+      //         })
+      //       }
+            
+      //       html += `</select></div>`;
+      //     } else if (e.type == 'div') html += `<div class="form-group ${classElement}"><div class="${classElement2}"></div></div>`
+      //     else {
+      //       if(e.type == 'input') html += `<div class="form-group ${classElement}"><label for="InputFullname">${e.name} : </label>`
+      //       if(e.src) html += `<img src="${e.src}" class="img-thumbnail">`
+      //       html += `<input class="form-control" id="Input${e.name}" name="${e.realName}" type="${input}" aria-describedby="${e.name}" placeholder="${place}" value="${value}"/>`;
+      //       if(e.type == 'input') html += `</div>`;
+      //     }
+
+
+      //     // Saat Terakhir
+      //     if (i == bodyComponent.length - 1) body.innerHTML = html;
+      //   });
+      // }
 
       // Bagian Footer
       footer.innerHTML = `<button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>`;
@@ -865,55 +1045,6 @@ document.onreadystatechange = () => {
     }
     // Akir Event table
 
-    // Jadikan huruf pertama dari suatu kata menjadi besar
-    function ubahHurufPertama(word, mau) {
-      // Ambil Bagian nomor depan
-      let potongan = word.slice(0, 1);
-      // Ubah Jadi Huruf besar
-      potongan = mau === undefined ? potongan.toUpperCase() : potongan.toLowerCase() ;
-      // Potong dari 0 sampai akhir
-      word = word.slice(1);
-      // Gabungkan
-      potongan += word;
-      // Kirim Potongannya
-      return potongan;
-    }
-
-    // untuk menambil kata ke-berapa dari string
-    function ambilKata(word, pemisah, option) {
-      let word2 = word.split(pemisah);
-
-      let result = "";
-      
-      // Destructuring 
-     	let {ambil, space, without, uppercase, ganti} = option;
-      space = space == undefined ? true : space;
-      uppercase = uppercase == undefined ?  true : uppercase;
-      ambil = ambil == undefined ? 'all' : ambil;
-      without = without == undefined ? [] : without;
-      
-      // Looping
-      word2.forEach(function (e, i) {
-        e =  uppercase == true ? ubahHurufPertama(e) : e;
-        e = uppercase == false ? e.toLowerCase() : e;
-        // Jika argument ambil sama dengan number
-        if (typeof ambil == "number") {
-          if (i == ambil) result += e;
-        } else if (typeof ambil == "object") {
-          if (termasuk(ambil, i) == true) result += `${e}`;
-        } else if (typeof ambil == "string") {
-          if (word2.length > without.length) {
-            if (gaTermasuk(without, i) == true) result += `${e}`;
-          } else result += `${e}`;
-        }
-        if(space && ganti === undefined ) result += ' '
-        else if (ganti != undefined && i != (word2.length - 1)) result += ganti
-      });
-      
-      result = result.trim();
- 
-      return result;
-    }
 
   }
 };
